@@ -1,0 +1,29 @@
+{
+  "name": "sushi-glitch",
+  "version": "1.0.0",
+  "description": "LEVIATHAN - Bringing big insights for small crews",
+  "scripts": {
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && pip install -r requirements.txt",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "frontend": "cd frontend && npm start",
+    "backend": "cd backend && python main.py",
+    "build": "cd frontend && npm run build",
+    "test": "cd frontend && npm test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/sushi-glitch.git"
+  },
+  "keywords": [
+    "fishing",
+    "sonar",
+    "marine",
+    "freshness",
+    "mobile-app"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
