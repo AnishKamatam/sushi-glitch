@@ -1,9 +1,243 @@
+
 .plan-card {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   padding: 1.5rem;
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.plan-map-panel,
+.forecast-panel {
+  position: relative;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.plan-map-panel {
+  background: radial-gradient(circle at top, rgba(56, 189, 248, 0.35), rgba(30, 64, 175, 0.85));
+}
+
+.map-topline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.map-label {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+
+.map-coords {
+  font-size: 1.1rem;
+}
+
+.map-wrapper {
+  position: relative;
+  flex: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 0 30px rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.plan-map {
+  height: 100%;
+  min-height: 260px;
+}
+
+.map-footnotes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.footnote::before {
+  content: "•";
+  margin-right: 0.4rem;
+  color: #38bdf8;
+}
+
+.forecast-panel {
+  background: linear-gradient(160deg, rgba(15, 118, 110, 0.8), rgba(8, 47, 73, 0.95));
+  border-left: 1px solid rgba(226, 232, 240, 0.12);
+}
+
+.forecast-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hero-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.hero-main {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+.hero-temp {
+  font-size: 4rem;
+  font-weight: 600;
+}
+
+.hero-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.forecast-metrics {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.forecast-metric {
+  background: rgba(15, 23, 42, 0.35);
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border-left: 4px solid rgba(56, 189, 248, 0.7);
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.metric-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.07em;
+  opacity: 0.8;
+}
+
+.metric-value {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.metric-caption {
+  opacity: 0.85;
+}
+
+.metric-caption.subtle {
+  font-size: 0.8rem;
+  opacity: 0.65;
+}
+
+.metric-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #38bdf8;
+}
+
+.hourly-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.hourly-card {
+  background: rgba(15, 23, 42, 0.25);
+  padding: 0.75rem;
+  border-radius: 12px;
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  border: 1px solid transparent;
+}
+
+.hourly-card.rating-good {
+  border-color: rgba(34, 197, 94, 0.5);
+}
+
+.hourly-card.rating-fair {
+  border-color: rgba(252, 211, 77, 0.6);
+}
+
+.hourly-card.rating-caution {
+  border-color: rgba(249, 115, 22, 0.6);
+}
+
+.hourly-card.rating-planb {
+  border-color: rgba(59, 130, 246, 0.6);
+}
+
+.hourly-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hourly-time {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.hourly-metric {
+  opacity: 0.8;
+}
+
+.hourly-comment {
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.forecast-warnings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.warning-pill {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  color: #fee2e2;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.warning-pill::before {
+  content: "⚠";
+  font-size: 0.85rem;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+}
+.plan-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .plan-header {
@@ -19,6 +253,232 @@
   margin: 0;
   color: #1e40af;
   font-size: 1.5rem;
+}
+
+.plan-overview {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 1.25rem;
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  border-radius: 16px;
+  overflow: hidden;
+  color: white;
+  min-height: 320px;
+}
+
+.plan-map-panel,
+.forecast-panel {
+  position: relative;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.plan-map-panel {
+  background: radial-gradient(circle at top, rgba(56, 189, 248, 0.35), rgba(30, 64, 175, 0.85));
+}
+
+.map-topline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.map-label {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+
+.map-coords {
+  font-size: 1.1rem;
+}
+
+.map-wrapper {
+  position: relative;
+  flex: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 0 30px rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.plan-map {
+  height: 100%;
+  min-height: 260px;
+}
+
+.map-footnotes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.footnote::before {
+  content: "•";
+  margin-right: 0.4rem;
+  color: #38bdf8;
+}
+
+.forecast-panel {
+  background: linear-gradient(160deg, rgba(15, 118, 110, 0.8), rgba(8, 47, 73, 0.95));
+  border-left: 1px solid rgba(226, 232, 240, 0.12);
+}
+
+.forecast-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hero-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.hero-main {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+.hero-temp {
+  font-size: 4rem;
+  font-weight: 600;
+}
+
+.hero-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.forecast-metrics {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.forecast-metric {
+  background: rgba(15, 23, 42, 0.35);
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border-left: 4px solid rgba(56, 189, 248, 0.7);
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.metric-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.07em;
+  opacity: 0.8;
+}
+
+.metric-value {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.metric-caption {
+  opacity: 0.85;
+}
+
+.metric-caption.subtle {
+  font-size: 0.8rem;
+  opacity: 0.65;
+}
+
+.metric-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #38bdf8;
+}
+
+.hourly-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.hourly-card {
+  background: rgba(15, 23, 42, 0.25);
+  padding: 0.75rem;
+  border-radius: 12px;
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  border: 1px solid transparent;
+}
+
+.hourly-card.rating-good {
+  border-color: rgba(34, 197, 94, 0.5);
+}
+
+.hourly-card.rating-fair {
+  border-color: rgba(252, 211, 77, 0.6);
+}
+
+.hourly-card.rating-caution {
+  border-color: rgba(249, 115, 22, 0.6);
+}
+
+.hourly-card.rating-planb {
+  border-color: rgba(59, 130, 246, 0.6);
+}
+
+.hourly-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hourly-time {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.hourly-metric {
+  opacity: 0.8;
+}
+
+.hourly-comment {
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.forecast-warnings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.warning-pill {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  color: #fee2e2;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.warning-pill::before {
+  content: "⚠";
+  font-size: 0.85rem;
 }
 
 .status-indicator {
@@ -115,6 +575,43 @@
 }
 
 @media (max-width: 768px) {
+  .plan-card {
+    padding: 1rem;
+  }
+
+  .plan-overview {
+    grid-template-columns: 1fr;
+    background: none;
+    gap: 1rem;
+  }
+
+  .plan-map-panel,
+  .forecast-panel {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .plan-map-panel {
+    background: radial-gradient(circle at top, rgba(56, 189, 248, 0.25), rgba(30, 64, 175, 0.75));
+  }
+
+  .forecast-panel {
+    background: linear-gradient(160deg, rgba(15, 118, 110, 0.9), rgba(8, 47, 73, 0.95));
+  }
+
+  .hourly-strip {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  .hero-main {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .hero-temp {
+    font-size: 3.2rem;
+  }
+
   .plan-grid {
     grid-template-columns: 1fr;
   }

@@ -128,30 +128,31 @@ export const mockApiService = {
   },
 
   async analyzeSonar(request) {
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 1200));
 
     const mockResponses = [
       {
-        depth: 85,
-        density: 'high',
-        schoolWidth: 'wide',
-        confidence: 0.92,
-        recommendation: "Strong school detected! Drop lines now at 80-90ft.",
-        detectedObjects: {
-          fishArches: 8,
-          bottomStructure: true,
-          thermocline: 75
+        depth: 0,
+        density: 'unknown',
+        school_width: 'unknown',
+        confidence: 0.5,
+        recommendation: "**FRESHNESS VERDICT:** Looks market ready\nJustification: Bright eyes and clear slime sheen detected in sample image.",
+        detected_objects: {
+          fish_arches: 0,
+          bottom_structure: false,
+          thermocline: null
         }
       },
       {
-        depth: 45,
-        density: 'medium',
-        schoolWidth: 'narrow',
-        confidence: 0.78,
-        recommendation: "Medium activity. Try slow trolling through area.",
-        detectedObjects: {
-          fishArches: 3,
-          bottomStructure: false
+        depth: 0,
+        density: 'unknown',
+        school_width: 'unknown',
+        confidence: 0.5,
+        recommendation: "**FRESHNESS VERDICT:** Needs attention\nJustification: Dull coloration and soft belly cues reduced freshness score.",
+        detected_objects: {
+          fish_arches: 0,
+          bottom_structure: false,
+          thermocline: null
         }
       }
     ];
@@ -196,5 +197,11 @@ export const mockApiService = {
 };
 
 export const getApiService = () => {
-  return process.env.NODE_ENV === 'development' ? mockApiService : apiService;
+  const useMock = process.env.REACT_APP_USE_MOCK?.toLowerCase() === 'true';
+
+  if (useMock) {
+    return mockApiService;
+  }
+
+  return apiService;
 };

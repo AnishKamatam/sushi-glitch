@@ -1,68 +1,74 @@
-import React, { useState, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import './SonarAssist.css';
+import { getApiService } from '../services/api';
+
+const api = getApiService();
 
 const SonarAssist = () => {
   const [sonarImage, setSonarImage] = useState(null);
   const [reading, setReading] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
 
-  const mockSonarAnalysis = () => {
-    const mockReadings = [
-      {
-        depth: 85,
-        density: 'high',
-        schoolWidth: 'wide',
-        confidence: 0.92,
-        recommendation: "Strong school detected! Drop lines now at 80-90ft."
-      },
-      {
-        depth: 45,
-        density: 'medium',
-        schoolWidth: 'narrow',
-        confidence: 0.78,
-        recommendation: "Medium activity. Try slow trolling through area."
-      },
-      {
-        depth: 120,
-        density: 'low',
-        schoolWidth: 'medium',
-        confidence: 0.65,
-        recommendation: "Light activity at depth. Consider moving to shallower water."
-      }
-    ];
-    return mockReadings[Math.floor(Math.random() * mockReadings.length)];
-  };
-
-  const handleImageUpload = (event) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setSonarImage(e.target?.result);
-        analyzeSonar();
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const analyzeSonar = () => {
-    setIsAnalyzing(true);
+  const resetState = useCallback(() => {
     setReading(null);
+    setError(null);
+  }, []);
 
-    setTimeout(() => {
-      const analysis = mockSonarAnalysis();
-      setReading(analysis);
-      setIsAnalyzing(false);
+  const handleImageUpload = useCallback(async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
 
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(analysis.recommendation);
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const dataUrl = e.target?.result;
+      if (!dataUrl || typeof dataUrl !== 'string') {
+        setError('Unable to read image file.');
+        return;
+      }
+
+      setSonarImage(dataUrl);
+      await analyzeSonar(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
+  const analyzeSonar = useCallback(async (imageDataUrl) => {
+    resetState();
+    setIsAnalyzing(true);
+
+    try {
+      const result = await api.analyzeSonar({
+        image: imageDataUrl,
+        sonar_type: 'image_upload',
+      });
+
+      const normalizedReading = {
+        depth: result?.depth ?? 0,
+        density: result?.density ?? 'unknown',
+        schoolWidth: result?.school_width ?? result?.schoolWidth ?? 'unknown',
+        confidence: typeof result?.confidence === 'number' ? result.confidence : null,
+        recommendation: result?.recommendation ?? 'No recommendation returned.',
+      };
+
+      setReading(normalizedReading);
+
+      if (normalizedReading.recommendation && 'speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(normalizedReading.recommendation);
         utterance.rate = 0.9;
         utterance.pitch = 1.1;
         speechSynthesis.speak(utterance);
       }
-    }, 2000);
-  };
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to analyze sonar image.');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, [resetState]);
 
   const handleCameraCapture = () => {
     alert('Camera capture would open device camera to take sonar screen photo');
@@ -98,6 +104,12 @@ const SonarAssist = () => {
           >
             Capture Screen
           </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Upload Image
+          </button>
         </div>
 
         <input
@@ -123,19 +135,27 @@ const SonarAssist = () => {
         </div>
       )}
 
+      {error && (
+        <div className="error-banner">
+          {error}
+        </div>
+      )}
+
       {reading && (
         <div className="analysis-results">
           <div className="reading-header">
             <h3>Analysis Results</h3>
-            <div className="confidence-badge">
-              Confidence: {Math.round(reading.confidence * 100)}%
-            </div>
+            {typeof reading.confidence === 'number' && (
+              <div className="confidence-badge">
+                Confidence: {Math.round(reading.confidence * 100)}%
+              </div>
+            )}
           </div>
 
           <div className="reading-grid">
             <div className="reading-item">
               <span className="label">Depth</span>
-              <span className="value">{reading.depth} ft</span>
+              <span className="value">{reading.depth || 0} ft</span>
             </div>
             <div className="reading-item">
               <span className="label">Density</span>
@@ -143,18 +163,25 @@ const SonarAssist = () => {
                 className="value density-badge"
                 style={{ backgroundColor: getDensityColor(reading.density) }}
               >
-                {reading.density.toUpperCase()}
+                {reading.density?.toUpperCase?.() || 'UNKNOWN'}
               </span>
             </div>
             <div className="reading-item">
               <span className="label">School Size</span>
-              <span className="value">{reading.schoolWidth.toUpperCase()}</span>
+              <span className="value">{reading.schoolWidth?.toUpperCase?.() || 'UNKNOWN'}</span>
             </div>
           </div>
 
           <div className="recommendation">
             <h4>Recommendation</h4>
-            <p>{reading.recommendation}</p>
+            <p className="recommendation-text">
+              {reading.recommendation.split('\n').map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < reading.recommendation.split('\n').length - 1 && <br />}
+                </span>
+              ))}
+            </p>
             <button
               className="btn btn-accent"
               onClick={() => {

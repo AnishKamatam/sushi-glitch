@@ -149,6 +149,55 @@ class StorageService {
     this.setItem(STORAGE_KEYS.FRESHNESS_HISTORY, history);
   }
 
+  clearFreshnessHistory() {
+    this.setItem(STORAGE_KEYS.FRESHNESS_HISTORY, []);
+  }
+
+  updateFreshnessReading(id, updates) {
+    const history = this.getFreshnessHistory();
+    const index = history.findIndex(item => item.id === id);
+
+    if (index === -1) {
+      return null;
+    }
+
+    const updatedReading = {
+      ...history[index],
+      ...updates
+    };
+
+    history[index] = updatedReading;
+    this.setItem(STORAGE_KEYS.FRESHNESS_HISTORY, history);
+    return updatedReading;
+  }
+
+  appendTripEvent(event) {
+    const trip = this.getCurrentTrip();
+
+    if (!trip) {
+      return null;
+    }
+
+    const newEvent = {
+      id: event.id ?? `event_${Date.now()}`,
+      ...event
+    };
+
+    const updatedTrip = {
+      ...trip,
+      events: [...(trip.events || []), newEvent]
+    };
+
+    this.setCurrentTrip(updatedTrip);
+    this.saveTrip(updatedTrip);
+    return newEvent;
+  }
+
+  getCurrentTripEvents() {
+    const trip = this.getCurrentTrip();
+    return trip?.events || [];
+  }
+
   getSonarHistory() {
     return this.getItem(STORAGE_KEYS.SONAR_HISTORY, []);
   }

@@ -1,46 +1,43 @@
-# Getting Started with Create React App
+# Leviathan Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This React client powers the Leviathan fishing copilot demo. It includes a Plan Card view with geolocated charts, a sonar assistant, and freshness QA tooling.
 
-## Available Scripts
+## Prerequisites
 
-In the project directory, you can run:
+- Node.js 18+ (19 works too)
+- npm 8+
 
-### `npm start`
+## Setup
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```powershell
+git clone <repo>
+cd sushi-glitch/frontend
+npm install
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Running Locally
 
-### `npm test`
+```powershell
+Set-Location frontend     # if not already
+npm start
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This launches `http://localhost:3000`.
 
-### `npm run build`
+## Location Permissions
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- The Plan Card map centers on your current location using the browser Geolocation API.
+- When prompted, allow location access for best results.
+- If denied or unsupported, the Plan Card falls back to the default home-port coordinates and shows a status message.
+- Location fetch happens once on load; use the “Update Conditions” button in the Plan Card when you want to re-check.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Map Tiles & Icons
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Uses Leaflet with OpenStreetMap tiles.
+- Marker icons load via the Leaflet CDN; no additional assets needed.
 
-### `npm run eject`
+## Scripts
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- `npm start`: Dev server with hot reload
+- `npm run build`: Production bundle
+- `npm test`: Jest test runner
