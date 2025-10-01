@@ -1,16 +1,189 @@
 
 .plan-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  background: transparent;
   padding: 1.5rem;
   text-align: left;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.plan-map-panel,
+/* Vessel Position Card - matches the provided image */
+.vessel-position-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #e9ecef;
+}
+
+.vessel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+.vessel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.map-icon {
+  width: 16px;
+  height: 16px;
+  background: #6c757d;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E") no-repeat center;
+  mask-size: contain;
+}
+
+.location-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #28a745;
+  font-size: 0.8rem;
+  font-weight: 500;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.status-icon {
+  width: 14px;
+  height: 14px;
+  background: #28a745;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5z'/%3E%3Cpath d='M2 17l10 5 10-5'/%3E%3Cpath d='M2 12l10 5 10-5'/%3E%3C/svg%3E") no-repeat center;
+  mask-size: contain;
+}
+
+.map-display {
+  background: #e3f2fd;
+  border-radius: 8px;
+  padding: 2.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-area {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.position-pin {
+  width: 24px;
+  height: 24px;
+  background: #dc2626;
+  position: absolute;
+  z-index: 2;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.position-pin::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+}
+
+.position-label {
+  background: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #495057;
+  position: absolute;
+  top: 2.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  white-space: nowrap;
+}
+
+.radius-circle {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border: 2px dashed #64b5f6;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.radius-label {
+  background: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  color: #6c757d;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.coordinates-display {
+  background: white;
+  border-radius: 8px;
+  padding: 0.8rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  border: 1px solid #e9ecef;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.coord-column {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.coord-label {
+  font-size: 0.7rem;
+  color: #6c757d;
+  margin-bottom: 0.2rem;
+  font-weight: 500;
+}
+
+.coord-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #212529;
+}
+
 .forecast-panel {
   position: relative;
   padding: 1.5rem;
@@ -19,9 +192,6 @@
   gap: 1rem;
 }
 
-.plan-map-panel {
-  background: radial-gradient(circle at top, rgba(56, 189, 248, 0.35), rgba(30, 64, 175, 0.85));
-}
 
 .map-topline {
   display: flex;
@@ -225,20 +395,6 @@
   font-size: 0.85rem;
 }
 
-.leaflet-container {
-  width: 100%;
-  height: 100%;
-}
-.plan-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  padding: 1.5rem;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
 
 .plan-header {
   display: flex;
@@ -266,7 +422,6 @@
   min-height: 320px;
 }
 
-.plan-map-panel,
 .forecast-panel {
   position: relative;
   padding: 1.5rem;
@@ -275,9 +430,6 @@
   gap: 1rem;
 }
 
-.plan-map-panel {
-  background: radial-gradient(circle at top, rgba(56, 189, 248, 0.35), rgba(30, 64, 175, 0.85));
-}
 
 .map-topline {
   display: flex;
@@ -493,29 +645,105 @@
   color: #166534;
 }
 
-.plan-grid {
+.planning-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
-.plan-section {
-  background: #f8fafc;
-  padding: 1rem;
-  border-radius: 8px;
-  border-left: 4px solid #0ea5e9;
+.plan-card {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.plan-section h3 {
-  margin: 0 0 1rem 0;
-  color: #1e40af;
+.plan-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.card-icon {
+  width: 24px;
+  height: 24px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.target-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231e40af' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Ccircle cx='12' cy='12' r='6'/%3E%3Ccircle cx='12' cy='12' r='2'/%3E%3C/svg%3E");
+}
+
+.conditions-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230ea5e9' stroke-width='2'%3E%3Cpath d='M3 12h18'/%3E%3Cpath d='M6 8h12'/%3E%3Cpath d='M6 16h12'/%3E%3C/svg%3E");
+}
+
+.logistics-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M12 1v6m0 6v6'/%3E%3Cpath d='m21 12-6-6m-6 6-6-6'/%3E%3C/svg%3E");
+}
+
+.planb-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ea580c' stroke-width='2'%3E%3Cpath d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/%3E%3Cpath d='M3 3v5h5'/%3E%3C/svg%3E");
+}
+
+.plan-card h3 {
+  margin: 0;
   font-size: 1.1rem;
+  font-weight: 600;
 }
 
-.target-info p, .logistics p, .plan-b p {
+.primary-target {
+  border-color: #3b82f6;
+}
+
+.primary-target h3 {
+  color: #1e40af;
+}
+
+.marine-conditions {
+  background: #eff6ff;
+  border-color: #0ea5e9;
+}
+
+.marine-conditions h3 {
+  color: #0ea5e9;
+}
+
+.logistics {
+  background: #f0fdf4;
+  border-color: #16a34a;
+}
+
+.logistics h3 {
+  color: #16a34a;
+}
+
+.plan-b {
+  background: #fff7ed;
+  border-color: #ea580c;
+}
+
+.plan-b h3 {
+  color: #ea580c;
+}
+
+.card-content p {
   margin: 0.5rem 0;
   color: #374151;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .conditions-grid {
@@ -534,11 +762,13 @@
 .condition-item .label {
   color: #6b7280;
   font-weight: 500;
+  font-size: 0.85rem;
 }
 
 .condition-item .value {
   color: #1f2937;
   font-weight: 600;
+  font-size: 0.85rem;
 }
 
 .plan-actions {
@@ -577,23 +807,72 @@
 @media (max-width: 768px) {
   .plan-card {
     padding: 1rem;
+    gap: 1rem;
+  }
+
+  .vessel-position-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .vessel-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .vessel-title {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .location-status {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .map-display {
+    padding: 2rem;
+    min-height: 220px;
+  }
+
+  .radius-circle {
+    width: 140px;
+    height: 140px;
+  }
+
+  .coordinates-display {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    padding: 0.6rem;
+  }
+
+  .coord-label {
+    font-size: 0.65rem;
+  }
+
+  .coord-value {
+    font-size: 0.85rem;
   }
 
   .plan-overview {
     grid-template-columns: 1fr;
     background: none;
     gap: 1rem;
+    margin-top: 0;
+    position: relative;
+    z-index: 0;
   }
 
-  .plan-map-panel,
   .forecast-panel {
     padding: 1rem;
     border-radius: 12px;
   }
 
-  .plan-map-panel {
-    background: radial-gradient(circle at top, rgba(56, 189, 248, 0.25), rgba(30, 64, 175, 0.75));
-  }
 
   .forecast-panel {
     background: linear-gradient(160deg, rgba(15, 118, 110, 0.9), rgba(8, 47, 73, 0.95));
@@ -612,8 +891,31 @@
     font-size: 3.2rem;
   }
 
-  .plan-grid {
+  .planning-grid {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .plan-card {
+    padding: 1rem;
+  }
+
+  .card-header {
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .plan-card h3 {
+    font-size: 1rem;
+  }
+
+  .card-content p {
+    font-size: 0.85rem;
   }
 
   .conditions-grid {
@@ -622,5 +924,15 @@
 
   .plan-actions {
     flex-direction: column;
+  }
+
+  /* Ensure no overlapping on mobile */
+  .vessel-position-card + .plan-overview {
+    margin-top: 0;
+    clear: both;
+  }
+
+  .plan-grid {
+    margin-top: 1rem;
   }
 }

@@ -1,6 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import React, { useEffect, useMemo, useState } from 'react';
 import './PlanCard.css';
 
 const defaultPosition = { lat: 47.613, lng: -122.342 };
@@ -94,19 +92,10 @@ const fishermanForecast = {
   ]
 };
 
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
-});
 
 const PlanCard = () => {
   const [position, setPosition] = useState(defaultPosition);
   const [geoStatus, setGeoStatus] = useState('loading');
-  const mapContainerRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-  const markerRef = useRef(null);
-  const circleRef = useRef(null);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -114,6 +103,7 @@ const PlanCard = () => {
       return;
     }
 
+    // Get initial position
     navigator.geolocation.getCurrentPosition(
       (coords) => {
         setPosition({
@@ -127,61 +117,32 @@ const PlanCard = () => {
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
+
+    // Set up real-time position tracking
+    const watchId = navigator.geolocation.watchPosition(
+      (coords) => {
+        setPosition({
+          lat: coords.coords.latitude,
+          lng: coords.coords.longitude
+        });
+        setGeoStatus('ready');
+      },
+      () => {
+        setGeoStatus('denied');
+      },
+      { 
+        enableHighAccuracy: true, 
+        timeout: 10000,
+        maximumAge: 5000 // Update every 5 seconds
+      }
+    );
+
+    // Cleanup watch on unmount
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
   }, []);
 
-  useEffect(() => {
-    if (!mapContainerRef.current || mapInstanceRef.current) {
-      return;
-    }
-
-    const map = L.map(mapContainerRef.current, {
-      zoomControl: false,
-      attributionControl: false,
-      scrollWheelZoom: false
-    }).setView([position.lat, position.lng], 11);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    mapInstanceRef.current = map;
-
-    return () => {
-      map.remove();
-      mapInstanceRef.current = null;
-      markerRef.current = null;
-      circleRef.current = null;
-    };
-  }, [position.lat, position.lng]);
-
-  useEffect(() => {
-    if (!mapInstanceRef.current) {
-      return;
-    }
-
-    const map = mapInstanceRef.current;
-    const latlng = [position.lat, position.lng];
-
-    map.setView(latlng, map.getZoom());
-
-    if (!markerRef.current) {
-      markerRef.current = L.marker(latlng).addTo(map);
-    } else {
-      markerRef.current.setLatLng(latlng);
-    }
-
-    if (!circleRef.current) {
-      circleRef.current = L.circle(latlng, {
-        radius: 3704,
-        color: '#38bdf8',
-        fillColor: '#38bdf8',
-        fillOpacity: 0.15
-      }).addTo(map);
-    } else {
-      circleRef.current.setLatLng(latlng);
-    }
-  }, [position.lat, position.lng]);
 
   const mockPlanData = useMemo(() => ({
     targetSpecies: 'Rockfish, Lingcod',
@@ -220,27 +181,45 @@ const PlanCard = () => {
 
   return (
     <div className="plan-card">
-      <div className="plan-header">
-        <h2>Today's Plan</h2>
-        <div className="plan-status">
-          <span className="status-indicator good">Conditions: Good</span>
+      <div className="vessel-position-card">
+        <div className="vessel-header">
+          <div className="vessel-title">
+            <div className="map-icon"></div>
+            <span>Vessel Position</span>
+          </div>
+          <div className="location-status">
+            <div className="status-icon"></div>
+            <span>
+              {geoStatus === 'ready' ? 'Location services active' : 
+               geoStatus === 'loading' ? 'Locating vessel...' :
+               geoStatus === 'denied' ? 'Location denied' :
+               geoStatus === 'unsupported' ? 'GPS unavailable' : 'Location services active'}
+            </span>
+          </div>
+        </div>
+        
+        <div className="map-display">
+          <div className="map-area">
+            <div className="position-pin"></div>
+            <div className="position-label">Current Position</div>
+            <div className="radius-circle"></div>
+            <div className="radius-label">~2 nautical miles</div>
+          </div>
+        </div>
+        
+        <div className="coordinates-display">
+          <div className="coord-column">
+            <div className="coord-label">Latitude</div>
+            <div className="coord-value">{position.lat >= 0 ? `${position.lat.toFixed(4)}°N` : `${Math.abs(position.lat).toFixed(4)}°S`}</div>
+          </div>
+          <div className="coord-column">
+            <div className="coord-label">Longitude</div>
+            <div className="coord-value">{position.lng >= 0 ? `${position.lng.toFixed(4)}°E` : `${Math.abs(position.lng).toFixed(4)}°W`}</div>
+          </div>
         </div>
       </div>
 
       <div className="plan-overview">
-        <div className="plan-map-panel">
-          <div className="map-topline">
-            <span className="map-label">Vessel Position</span>
-            <span className="map-coords">{locationLabel}</span>
-          </div>
-          <div className="map-wrapper">
-            <div ref={mapContainerRef} className="plan-map" />
-          </div>
-          <div className="map-footnotes">
-            <span className="footnote">Blue radius ≈ 2 nm search ring</span>
-            <span className="footnote">Tap Update Conditions to refresh forecast</span>
-          </div>
-        </div>
 
         <div className="forecast-panel">
           <div className="forecast-hero">
@@ -295,10 +274,13 @@ const PlanCard = () => {
         </div>
       </div>
 
-      <div className="plan-grid">
-        <div className="plan-section primary-target">
-          <h3>Primary Target</h3>
-          <div className="target-info">
+      <div className="planning-grid">
+        <div className="plan-card primary-target">
+          <div className="card-header">
+            <div className="card-icon target-icon"></div>
+            <h3>Primary Target</h3>
+          </div>
+          <div className="card-content">
             <p><strong>Species:</strong> {mockPlanData.targetSpecies}</p>
             <p><strong>Depth:</strong> {mockPlanData.depthBand}</p>
             <p><strong>Best Time:</strong> {mockPlanData.timeWindow}</p>
@@ -306,37 +288,52 @@ const PlanCard = () => {
           </div>
         </div>
 
-        <div className="plan-section conditions">
-          <h3>Marine Conditions</h3>
-          <div className="conditions-grid">
-            <div className="condition-item">
-              <span className="label">Wind:</span>
-              <span className="value">{mockPlanData.conditions.windSpeed} kt {mockPlanData.conditions.windDirection}</span>
-            </div>
-            <div className="condition-item">
-              <span className="label">Waves:</span>
-              <span className="value">{mockPlanData.conditions.waveHeight} ft</span>
-            </div>
-            <div className="condition-item">
-              <span className="label">Tide:</span>
-              <span className="value">{mockPlanData.conditions.tide}</span>
-            </div>
-            <div className="condition-item">
-              <span className="label">Moon:</span>
-              <span className="value">{mockPlanData.conditions.lunar}</span>
+        <div className="plan-card marine-conditions">
+          <div className="card-header">
+            <div className="card-icon conditions-icon"></div>
+            <h3>Marine Conditions</h3>
+          </div>
+          <div className="card-content">
+            <div className="conditions-grid">
+              <div className="condition-item">
+                <span className="label">Wind:</span>
+                <span className="value">{mockPlanData.conditions.windSpeed} kt {mockPlanData.conditions.windDirection}</span>
+              </div>
+              <div className="condition-item">
+                <span className="label">Waves:</span>
+                <span className="value">{mockPlanData.conditions.waveHeight} ft</span>
+              </div>
+              <div className="condition-item">
+                <span className="label">Tide:</span>
+                <span className="value">{mockPlanData.conditions.tide}</span>
+              </div>
+              <div className="condition-item">
+                <span className="label">Moon:</span>
+                <span className="value">{mockPlanData.conditions.lunar}</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="plan-section logistics">
-          <h3>Logistics</h3>
-          <p><strong>Fuel:</strong> {mockPlanData.fuelNotes}</p>
-          <p><strong>Safety:</strong> {mockPlanData.safetyNotes}</p>
+        <div className="plan-card logistics">
+          <div className="card-header">
+            <div className="card-icon logistics-icon"></div>
+            <h3>Logistics</h3>
+          </div>
+          <div className="card-content">
+            <p><strong>Fuel:</strong> {mockPlanData.fuelNotes}</p>
+            <p><strong>Safety:</strong> {mockPlanData.safetyNotes}</p>
+          </div>
         </div>
 
-        <div className="plan-section plan-b">
-          <h3>Plan B</h3>
-          <p>{mockPlanData.planB}</p>
+        <div className="plan-card plan-b">
+          <div className="card-header">
+            <div className="card-icon planb-icon"></div>
+            <h3>Plan B</h3>
+          </div>
+          <div className="card-content">
+            <p><strong>Strategy:</strong> {mockPlanData.planB}</p>
+          </div>
         </div>
       </div>
 

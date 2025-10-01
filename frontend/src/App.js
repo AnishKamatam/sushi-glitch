@@ -38,29 +38,27 @@ function App() {
 
   return (
     <div className="App">
-      <header className="app-header">
-        <h1>LEVIATHAN</h1>
-        <p>Bringing big insights for small crews</p>
-      </header>
-
-      <nav className="tab-navigation">
+      <nav className="floating-bottom-nav">
         <button
-          className={`tab ${activeTab === 'plan' ? 'active' : ''}`}
+          className={`nav-item ${activeTab === 'plan' ? 'active' : ''}`}
           onClick={() => setActiveTab('plan')}
+          title="Plan Card"
         >
-          Plan Card
+          <div className="nav-icon plan-icon"></div>
         </button>
         <button
-          className={`tab ${activeTab === 'sonar' ? 'active' : ''}`}
+          className={`nav-item ${activeTab === 'sonar' ? 'active' : ''}`}
           onClick={() => setActiveTab('sonar')}
+          title="Sonar Assist"
         >
-          Sonar Assist
+          <div className="nav-icon sonar-icon"></div>
         </button>
         <button
-          className={`tab ${activeTab === 'freshness' ? 'active' : ''}`}
+          className={`nav-item ${activeTab === 'freshness' ? 'active' : ''}`}
           onClick={() => setActiveTab('freshness')}
+          title="Freshness QA"
         >
-          Freshness QA
+          <div className="nav-icon freshness-icon"></div>
         </button>
       </nav>
 
