@@ -45,11 +45,18 @@ class DetectedObjects(BaseModel):
 
 class SonarResponse(BaseModel):
     depth: float
-    density: str  # 'low' | 'medium' | 'high'
-    school_width: str  # 'narrow' | 'medium' | 'wide'
+    density: str  # 'sparse' | 'moderate' | 'dense'
+    school_width: str  # e.g., '20 ft'
     confidence: float
     recommendation: str
     detected_objects: DetectedObjects
+    # Additional analysis fields
+    bottom_type: Optional[str] = None
+    bottom_depth: Optional[int] = None
+    fish_size: Optional[str] = None
+    fish_behavior: Optional[str] = None
+    baitfish_present: Optional[bool] = None
+    species_guess: Optional[str] = None
 
 class FreshnessRequest(BaseModel):
     image: str  # base64 encoded image
