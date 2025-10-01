@@ -1,24 +1,72 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useSwipeable } from 'react-swipeable';
 import './App.css';
 import PlanCard from './components/PlanCard';
 import SonarAssist from './components/SonarAssist';
 import FreshnessQA from './components/FreshnessQA';
 
-function App() {
-  const [activeTab, setActiveTab] = useState('plan');
+const tabs = [
+  { id: 'plan', label: 'Plan Card', Component: PlanCard },
+  { id: 'sonar', label: 'Sonar Assist', Component: SonarAssist },
+  { id: 'freshness', label: 'Freshness QA', Component: FreshnessQA }
+];
 
-  const renderActiveComponent = () => {
-    switch (activeTab) {
-      case 'plan':
-        return <PlanCard />;
-      case 'sonar':
-        return <SonarAssist />;
-      case 'freshness':
-        return <FreshnessQA />;
-      default:
-        return <PlanCard />;
+const swipeVariants = {
+  enter: (direction) => ({
+    x: direction >= 0 ? '100%' : '-100%',
+    opacity: 0,
+    position: 'absolute'
+  }),
+  center: {
+    x: '0%',
+    opacity: 1,
+    position: 'relative'
+  },
+  exit: (direction) => ({
+    x: direction >= 0 ? '-100%' : '100%',
+    opacity: 0,
+    position: 'absolute'
+  })
+};
+
+function App() {
+  const [activeTab, setActiveTab] = useState(tabs[0].id);
+  const [direction, setDirection] = useState(0);
+
+  const activeIndex = tabs.findIndex((tab) => tab.id === activeTab);
+  const safeIndex = activeIndex === -1 ? 0 : activeIndex;
+
+  const ActiveComponent = useMemo(
+    () => tabs[safeIndex]?.Component ?? PlanCard,
+    [safeIndex]
+  );
+
+  const goToTabIndex = (targetIndex) => {
+    if (targetIndex < 0 || targetIndex >= tabs.length || targetIndex === safeIndex) {
+      return;
     }
+
+    setDirection(targetIndex > safeIndex ? 1 : -1);
+    setActiveTab(tabs[targetIndex].id);
   };
+
+  const handleTabSelect = (tabId) => {
+    const targetIndex = tabs.findIndex((tab) => tab.id === tabId);
+    if (targetIndex === -1) {
+      return;
+    }
+
+    goToTabIndex(targetIndex);
+  };
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => goToTabIndex(safeIndex + 1),
+    onSwipedRight: () => goToTabIndex(safeIndex - 1),
+    trackTouch: true,
+    trackMouse: true,
+    delta: 10
+  });
 
   return (
     <div className="App">
@@ -28,28 +76,36 @@ function App() {
       </header>
 
       <nav className="tab-navigation">
-        <button
-          className={`tab ${activeTab === 'plan' ? 'active' : ''}`}
-          onClick={() => setActiveTab('plan')}
-        >
-          Plan Card
-        </button>
-        <button
-          className={`tab ${activeTab === 'sonar' ? 'active' : ''}`}
-          onClick={() => setActiveTab('sonar')}
-        >
-          Sonar Assist
-        </button>
-        <button
-          className={`tab ${activeTab === 'freshness' ? 'active' : ''}`}
-          onClick={() => setActiveTab('freshness')}
-        >
-          Freshness QA
-        </button>
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+            aria-pressed={activeTab === tab.id}
+            onClick={() => handleTabSelect(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
       </nav>
 
       <main className="main-content">
-        {renderActiveComponent()}
+        <div className="swipe-container" {...swipeHandlers}>
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            <motion.div
+              key={activeTab}
+              className="tab-panel"
+              custom={direction}
+              variants={swipeVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.28, ease: 'easeInOut' }}
+            >
+              <ActiveComponent />
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </main>
     </div>
   );

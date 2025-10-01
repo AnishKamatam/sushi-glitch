@@ -62,3 +62,16 @@
   flex-direction: column;
   gap: 2rem;
 }
+
+.swipe-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  display: grid;
+  touch-action: pan-y;
+}
+
+.tab-panel {
+  grid-area: 1 / 1;
+  width: 100%;
+}
