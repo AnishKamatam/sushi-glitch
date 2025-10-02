@@ -6,6 +6,32 @@
 echo "🐟 Starting LEVIATHAN Fishing Copilot..."
 echo "========================================"
 
+git fetch origin
+
+# Check if there are updates
+LOCAL=$(git rev-parse @)
+REMOTE=$(git rev-parse @{u} 2>/dev/null)
+
+if [ "$LOCAL" != "$REMOTE" ]; then
+    echo "⚠️  Updates available! Pulling latest changes..."
+    git pull origin main || git pull origin master
+    echo "✅ Repository updated"
+
+    # Install any new backend dependencies
+    echo "📦 Checking backend dependencies..."
+    pip install -r backend/requirements.txt --quiet
+
+    # Install any new frontend dependencies
+    echo "📦 Checking frontend dependencies..."
+    cd frontend
+    npm install --silent
+    cd ..
+else
+    echo "✅ Repository is up to date"
+fi
+
+echo ""
+
 # Check if .env exists in backend
 if [ ! -f ".env" ]; then
     echo "⚠️  Warning: backend/.env not found!"
