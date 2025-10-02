@@ -1,4 +1,421 @@
 
+.weather-plan-card {
+  min-height: 100vh;
+  padding: 0 0 40px 0;
+  margin: 0;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  color: white;
+  overflow-x: hidden;
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Clear Night Sky */
+.weather-plan-card.clear-night {
+  background: 
+    radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2px 2px at 160px 30px, #ddd, transparent),
+    radial-gradient(1px 1px at 200px 60px, #fff, transparent),
+    radial-gradient(1px 1px at 240px 20px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 280px 90px, #eee, transparent),
+    radial-gradient(1px 1px at 320px 50px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 360px 10px, #fff, transparent),
+    radial-gradient(1px 1px at 400px 70px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 440px 30px, #ddd, transparent),
+    radial-gradient(1px 1px at 480px 80px, #fff, transparent),
+    radial-gradient(1px 1px at 520px 40px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 560px 20px, #eee, transparent),
+    radial-gradient(1px 1px at 600px 60px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 640px 10px, #fff, transparent),
+    radial-gradient(1px 1px at 680px 50px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 720px 90px, #ddd, transparent),
+    radial-gradient(1px 1px at 760px 30px, #fff, transparent),
+    radial-gradient(1px 1px at 50px 20px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 80px 50px, #fff, transparent),
+    radial-gradient(1px 1px at 120px 15px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 150px 85px, #eee, transparent),
+    radial-gradient(1px 1px at 180px 25px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 220px 45px, #fff, transparent),
+    radial-gradient(1px 1px at 260px 75px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 300px 35px, #ddd, transparent),
+    radial-gradient(1px 1px at 340px 65px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 380px 15px, #fff, transparent),
+    radial-gradient(1px 1px at 420px 55px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 460px 25px, #eee, transparent),
+    radial-gradient(1px 1px at 500px 75px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 540px 45px, #fff, transparent),
+    radial-gradient(1px 1px at 580px 85px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 620px 35px, #ddd, transparent),
+    radial-gradient(1px 1px at 660px 65px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 700px 15px, #fff, transparent),
+    radial-gradient(1px 1px at 740px 55px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 780px 25px, #eee, transparent),
+    linear-gradient(135deg, #0c1445 0%, #1a1a2e 25%, #16213e 50%, #0f0f23 75%, #000000 100%);
+  background-size: 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 100% 100%;
+  background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+
+/* Windy Night Sky */
+.weather-plan-card.windy-night {
+  background: 
+    radial-gradient(1px 1px at 20px 30px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 160px 30px, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 200px 60px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 240px 20px, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 280px 90px, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 320px 50px, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 360px 10px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 50px 20px, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 80px 50px, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 120px 15px, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 150px 85px, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 180px 25px, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 220px 45px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 260px 75px, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 300px 35px, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 340px 65px, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 380px 15px, rgba(255,255,255,0.6), transparent),
+    linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f0f23 50%, #0c1445 75%, #000000 100%);
+  background-size: 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 100% 100%;
+  background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  animation: windyStars 3s ease-in-out infinite;
+}
+
+/* Stormy Night Sky */
+.weather-plan-card.stormy-night {
+  background: 
+    radial-gradient(1px 1px at 20px 30px, rgba(255,255,255,0.2), transparent),
+    radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.1), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.15), transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.1), transparent),
+    radial-gradient(1px 1px at 160px 30px, rgba(255,255,255,0.2), transparent),
+    radial-gradient(1px 1px at 200px 60px, rgba(255,255,255,0.1), transparent),
+    linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f0f23 75%, #000000 100%);
+  background-size: 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 800px 100px, 100% 100%;
+  background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  animation: stormySky 2s ease-in-out infinite;
+}
+
+/* Clear Day Sky */
+.weather-plan-card.clear-day {
+  background: 
+    radial-gradient(ellipse 120px 60px at 20% 20%, rgba(255,255,255,0.3) 0%, transparent 70%),
+    radial-gradient(ellipse 80px 40px at 80% 30%, rgba(255,255,255,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 100px 50px at 40% 80%, rgba(255,255,255,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 60px 30px at 60% 10%, rgba(255,255,255,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 90px 45px at 10% 60%, rgba(255,255,255,0.2) 0%, transparent 70%),
+    linear-gradient(135deg, #87CEEB 0%, #4682B4 25%, #1e3a8a 50%, #0f172a 75%, #000000 100%);
+  background-size: 100% 100%;
+}
+
+/* Windy Day Sky */
+.weather-plan-card.windy-day {
+  background: 
+    radial-gradient(ellipse 150px 80px at 20% 20%, rgba(255,255,255,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 100px 60px at 80% 30%, rgba(255,255,255,0.3) 0%, transparent 70%),
+    radial-gradient(ellipse 120px 70px at 40% 80%, rgba(255,255,255,0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 80px 50px at 60% 10%, rgba(255,255,255,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 110px 65px at 10% 60%, rgba(255,255,255,0.3) 0%, transparent 70%),
+    linear-gradient(135deg, #708090 0%, #4682B4 25%, #1e3a8a 50%, #0f172a 75%, #000000 100%);
+  background-size: 100% 100%;
+  animation: windyClouds 4s ease-in-out infinite;
+}
+
+/* Stormy Day Sky */
+.weather-plan-card.stormy-day {
+  background: 
+    radial-gradient(ellipse 200px 100px at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 70%),
+    radial-gradient(ellipse 150px 80px at 80% 30%, rgba(255,255,255,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 180px 90px at 40% 80%, rgba(255,255,255,0.09) 0%, transparent 70%),
+    radial-gradient(ellipse 120px 60px at 60% 10%, rgba(255,255,255,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 160px 85px at 10% 60%, rgba(255,255,255,0.07) 0%, transparent 70%),
+    linear-gradient(135deg, #2F4F4F 0%, #1e3a8a 25%, #0f172a 50%, #000000 75%, #000000 100%);
+  background-size: 100% 100%;
+  animation: stormyClouds 1.5s ease-in-out infinite;
+}
+
+/* Moon for night conditions */
+.weather-plan-card.clear-night::before,
+.weather-plan-card.windy-night::before,
+.weather-plan-card.stormy-night::before {
+  content: '';
+  position: absolute;
+  top: 2%;
+  right: 8%;
+  width: 80px;
+  height: 80px;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.8) 0%, transparent 30%),
+    radial-gradient(circle at 60% 40%, rgba(200,200,200,0.6) 0%, transparent 25%),
+    radial-gradient(circle at 40% 70%, rgba(180,180,180,0.4) 0%, transparent 20%),
+    radial-gradient(circle at 80% 20%, rgba(220,220,220,0.5) 0%, transparent 15%),
+    radial-gradient(circle at 30% 30%, #f8f8ff, #e6e6fa, #d3d3d3);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 25px rgba(255,255,255,0.3),
+    inset -12px -12px 0 rgba(0,0,0,0.1);
+  z-index: 1;
+}
+
+/* Moon phases for different conditions */
+.weather-plan-card.windy-night::before {
+  background: radial-gradient(circle at 20% 20%, #f0f0f0, #d3d3d3, #a9a9a9);
+  box-shadow: 
+    0 0 15px rgba(255,255,255,0.2),
+    inset -8px -8px 0 rgba(0,0,0,0.15);
+}
+
+.weather-plan-card.stormy-night::before {
+  background: radial-gradient(circle at 10% 10%, #e0e0e0, #b0b0b0, #808080);
+  box-shadow: 
+    0 0 10px rgba(255,255,255,0.1),
+    inset -5px -5px 0 rgba(0,0,0,0.2);
+}
+
+/* Sun for day conditions */
+.weather-plan-card.clear-day::before,
+.weather-plan-card.windy-day::before,
+.weather-plan-card.stormy-day::before {
+  content: '';
+  position: absolute;
+  top: 1%;
+  right: 5%;
+  width: 90px;
+  height: 90px;
+  background: radial-gradient(circle at 30% 30%, #ffff00, #ffd700, #ffa500);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 35px rgba(255,255,0,0.4),
+    0 0 70px rgba(255,215,0,0.2);
+  z-index: 1;
+}
+
+/* Sun variations for different day conditions */
+.weather-plan-card.windy-day::before {
+  background: radial-gradient(circle at 30% 30%, #ffeb3b, #ffc107, #ff9800);
+  box-shadow: 
+    0 0 25px rgba(255,235,59,0.3),
+    0 0 50px rgba(255,193,7,0.15);
+}
+
+.weather-plan-card.stormy-day::before {
+  background: radial-gradient(circle at 30% 30%, #ffc107, #ff9800, #ff5722);
+  box-shadow: 
+    0 0 20px rgba(255,193,7,0.2),
+    0 0 40px rgba(255,152,0,0.1);
+}
+
+/* Animations */
+@keyframes twinkle {
+  0%, 100% { 
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  }
+  50% { 
+    background-position: 0 -10px, 0 -5px, 0 -15px, 0 -8px, 0 -12px, 0 -6px, 0 -18px, 0 -7px, 0 -11px, 0 -9px, 0 -13px, 0 -4px, 0 -16px, 0 -3px, 0 -14px, 0 -2px, 0 -17px, 0 -1px, 0 -19px, 0 -20px, 0 0;
+  }
+}
+
+@keyframes windyStars {
+  0%, 100% { 
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  }
+  25% { 
+    background-position: -5px -2px, -3px -1px, -7px -3px, -2px -1px, -6px -2px, -4px -1px, -8px -3px, -1px -1px, -5px -2px, -3px -1px, 0 0;
+  }
+  50% { 
+    background-position: -10px -4px, -6px -2px, -14px -6px, -4px -2px, -12px -4px, -8px -2px, -16px -6px, -2px -2px, -10px -4px, -6px -2px, 0 0;
+  }
+  75% { 
+    background-position: -5px -2px, -3px -1px, -7px -3px, -2px -1px, -6px -2px, -4px -1px, -8px -3px, -1px -1px, -5px -2px, -3px -1px, 0 0;
+  }
+}
+
+@keyframes stormySky {
+  0%, 100% { 
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  }
+  50% { 
+    background-position: -20px -10px, -10px -5px, -30px -15px, -5px -2px, -25px -12px, -15px -7px, 0 0;
+  }
+}
+
+@keyframes windyClouds {
+  0%, 100% { 
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+  50% { 
+    background-position: -10px -5px, -5px -3px, -15px -8px, 0 0;
+  }
+}
+
+@keyframes stormyClouds {
+  0%, 100% { 
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+  50% { 
+    background-position: -20px -10px, -10px -5px, -30px -15px, 0 0;
+  }
+}
+
+/* Weather-style Marine Conditions Display */
+.marine-weather-display {
+  padding: 2rem 1.5rem 1rem;
+  text-align: center;
+  position: relative;
+  background: transparent;
+  z-index: 2;
+}
+
+.location-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.location-name {
+  font-size: 1.7rem;
+  font-weight: 300;
+  color: white;
+  text-align: center;
+}
+
+.location-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.status-icon {
+  width: 12px;
+  height: 12px;
+  background: #22c55e;
+  border-radius: 50%;
+}
+
+.main-conditions {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.primary-temp {
+  font-size: 6rem;
+  font-weight: 200;
+  color: white;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.feels-like {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: #cbd5e1;
+  margin-bottom: 0.5rem;
+}
+
+.high-low {
+  font-size: 1rem;
+  font-weight: 300;
+  color: #94a3b8;
+}
+
+/* Combined Weather Card */
+.combined-weather-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1rem;
+  margin: 0 auto 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 90%;
+  position: relative;
+}
+
+.weather-description {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.weather-description p {
+  margin: 0;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 300;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.hourly-forecast-container {
+  overflow: hidden;
+}
+
+/* Hourly Forecast Strip */
+.hourly-forecast-strip {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0.5rem 0;
+  scroll-behavior: smooth;
+}
+
+.hourly-forecast-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.hourly-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 50px;
+  flex-shrink: 0;
+  padding: 0.5rem;
+}
+
+.hourly-time {
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  font-weight: 300;
+}
+
+.moon-icon {
+  width: 20px;
+  height: 20px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f8f8ff' stroke-width='2'%3E%3Cpath d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+.cloud-icon {
+  width: 20px;
+  height: 20px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2'%3E%3Cpath d='M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+.hourly-temp {
+  font-size: 0.9rem;
+  color: white;
+  font-weight: 300;
+}
+
 .plan-card {
   background: transparent;
   padding: 1.5rem;
@@ -13,11 +430,15 @@
 
 /* Vessel Position Card - matches the provided image */
 .vessel-position-card {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  border: 1px solid #e9ecef;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1rem;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  max-width: 90%;
 }
 
 .vessel-header {
@@ -34,7 +455,7 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
-  color: #495057;
+  color: white;
   font-size: 0.9rem;
   flex: 1;
   min-width: 0;
@@ -43,7 +464,7 @@
 .map-icon {
   width: 16px;
   height: 16px;
-  background: #6c757d;
+  background: #cbd5e1;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E") no-repeat center;
   mask-size: contain;
 }
@@ -52,7 +473,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #28a745;
+  color: #22c55e;
   font-size: 0.8rem;
   font-weight: 500;
   flex-shrink: 0;
@@ -62,14 +483,14 @@
 .status-icon {
   width: 14px;
   height: 14px;
-  background: #28a745;
+  background: #22c55e;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5z'/%3E%3Cpath d='M2 17l10 5 10-5'/%3E%3Cpath d='M2 12l10 5 10-5'/%3E%3C/svg%3E") no-repeat center;
   mask-size: contain;
 }
 
 .map-display {
-  background: #e3f2fd;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
   padding: 2.5rem;
   margin-bottom: 1.5rem;
   position: relative;
@@ -77,6 +498,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .map-area {
@@ -113,17 +535,17 @@
 }
 
 .position-label {
-  background: white;
+  background: rgba(0, 0, 0, 0.8);
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
   font-size: 0.8rem;
   font-weight: 500;
-  color: #495057;
+  color: white;
   position: absolute;
   top: 2.2rem;
   left: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   white-space: nowrap;
 }
 
@@ -139,50 +561,36 @@
 }
 
 .radius-label {
-  background: white;
+  background: rgba(0, 0, 0, 0.8);
   padding: 0.2rem 0.6rem;
   border-radius: 4px;
   font-size: 0.7rem;
-  color: #6c757d;
+  color: #cbd5e1;
   position: absolute;
   top: 1rem;
   right: 1rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .coordinates-display {
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 0.8rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.8rem;
-  border: 1px solid #e9ecef;
+  display: flex;
+  gap: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   width: 100%;
   box-sizing: border-box;
-}
-
-.coord-column {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  min-width: 0;
-}
-
-.coord-label {
-  font-size: 0.7rem;
-  color: #6c757d;
-  margin-bottom: 0.2rem;
-  font-weight: 500;
 }
 
 .coord-value {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #212529;
+  color: white;
+  text-align: center;
 }
+
 
 .forecast-panel {
   position: relative;
@@ -649,21 +1057,31 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin: 0 auto 1.5rem;
+  max-width: 90%;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  border-radius: 20px;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .plan-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
   padding: 1.25rem;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 2px solid;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  color: white;
 }
 
 .plan-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .card-header {
@@ -702,46 +1120,17 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
+  color: white;
 }
 
 .primary-target {
   border-color: #3b82f6;
 }
 
-.primary-target h3 {
-  color: #1e40af;
-}
-
-.marine-conditions {
-  background: #eff6ff;
-  border-color: #0ea5e9;
-}
-
-.marine-conditions h3 {
-  color: #0ea5e9;
-}
-
-.logistics {
-  background: #f0fdf4;
-  border-color: #16a34a;
-}
-
-.logistics h3 {
-  color: #16a34a;
-}
-
-.plan-b {
-  background: #fff7ed;
-  border-color: #ea580c;
-}
-
-.plan-b h3 {
-  color: #ea580c;
-}
 
 .card-content p {
   margin: 0.5rem 0;
-  color: #374151;
+  color: #cbd5e1;
   font-size: 0.9rem;
   line-height: 1.4;
 }
@@ -760,13 +1149,13 @@
 }
 
 .condition-item .label {
-  color: #6b7280;
+  color: #94a3b8;
   font-weight: 500;
   font-size: 0.85rem;
 }
 
 .condition-item .value {
-  color: #1f2937;
+  color: white;
   font-weight: 600;
   font-size: 0.85rem;
 }
@@ -775,6 +1164,13 @@
   display: flex;
   gap: 1rem;
   justify-content: center;
+  margin: 0 auto 2rem;
+  max-width: 90%;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn {
@@ -787,12 +1183,14 @@
 }
 
 .btn-primary {
-  background-color: #0ea5e9;
+  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #0f172a 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
 }
 
 .btn-primary:hover {
-  background-color: #0284c7;
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 50%, #1e3a8a 100%);
+  box-shadow: 0 6px 16px rgba(30, 64, 175, 0.4);
 }
 
 .btn-secondary {
@@ -894,6 +1292,7 @@
   .planning-grid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
+    padding: 1rem;
   }
 
   .plan-card {
@@ -936,3 +1335,4 @@
     margin-top: 1rem;
   }
 }
+

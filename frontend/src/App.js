@@ -38,33 +38,38 @@ function App() {
 
   return (
     <div className="App">
-      <nav className="floating-bottom-nav">
-        <button
-          className={`nav-item ${activeTab === 'plan' ? 'active' : ''}`}
-          onClick={() => setActiveTab('plan')}
-          title="Plan Card"
-        >
-          <div className="nav-icon plan-icon"></div>
-        </button>
-        <button
-          className={`nav-item ${activeTab === 'sonar' ? 'active' : ''}`}
-          onClick={() => setActiveTab('sonar')}
-          title="Sonar Assist"
-        >
-          <div className="nav-icon sonar-icon"></div>
-        </button>
-        <button
-          className={`nav-item ${activeTab === 'freshness' ? 'active' : ''}`}
-          onClick={() => setActiveTab('freshness')}
-          title="Freshness QA"
-        >
-          <div className="nav-icon freshness-icon"></div>
-        </button>
-      </nav>
-
       <main className="main-content">
         {renderActiveComponent()}
       </main>
+
+      {/* Bottom Navigation Bar */}
+      <div className="bottom-navigation">
+        <div className="nav-item" onClick={() => setActiveTab('plan')}>
+          <div className={`nav-icon ${activeTab === 'plan' ? 'active' : ''}`}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+        </div>
+        <div className="nav-item" onClick={() => setActiveTab('sonar')}>
+          <div className={`nav-icon ${activeTab === 'sonar' ? 'active' : ''}`}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+        </div>
+        <div className="nav-item" onClick={() => setActiveTab('freshness')}>
+          <div className={`nav-icon ${activeTab === 'freshness' ? 'active' : ''}`}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 12l2 2 4-4"/>
+              <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.3 0 2.52.28 3.63.8"/>
+            </svg>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
