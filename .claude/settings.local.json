@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(pip3 install:*)",
+      "Bash(python3:*)",
+      "Bash(venv/bin/pip install:*)",
+      "Read(//opt/homebrew/Cellar/python@3.13/3.13.4/Frameworks/Python.framework/Versions/3.13/bin/**)",
+      "Bash(../venv/bin/python3:*)"
     ],
     "deny": [],
     "ask": []

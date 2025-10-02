@@ -1,0 +1,68 @@
+# Sonar Assist Configuration
+
+# Screen capture settings
+capture:
+  target_fps: 15
+  monitor_index: 0  # Primary monitor by default
+
+# Computer vision parameters
+cv:
+  # Contour filtering
+  area_min: 40
+  area_max: 20000
+  aspect_ratio_max: 5.0
+
+  # Thresholding
+  bin_block: 21
+  bin_c: -5
+
+  # Density and quality thresholds
+  density_thr: 140.0  # Mean intensity threshold for "dense" classification
+  tightness_thr: 0.70  # Compactness threshold for tight schools
+
+  # Preprocessing
+  blur_kernel: 5
+  clahe_clip_limit: 2.0
+  clahe_grid_size: 8
+
+# Depth calibration (updated via calibration UI)
+depth_map:
+  pix_top: 50
+  pix_bot: 650
+  ft_top: 0
+  ft_bot: 100
+
+# Speech/TTS settings
+speech:
+  debounce_sec: 2.5
+  min_confidence: 0.6  # Minimum confidence to speak a recommendation
+
+# Groq vision model settings
+groq:
+  use_groq: true
+  model_id: "llama-3.2-90b-vision-preview"  # Free tier vision model
+  endpoint: "https://api.groq.com/openai/v1/chat/completions"
+  sample_rate_hz: 1  # Query Groq once per second
+  timeout_sec: 10
+  max_tokens: 300
+  temperature: 0.3
+
+# ElevenLabs TTS settings
+elevenlabs:
+  voice_id: "pqHfZKP75CvOlQylNhV4"  # Default Bill voice
+  model_id: "eleven_multilingual_v2"
+  stability: 0.5
+  similarity_boost: 0.75
+
+# Detection and tracking
+tracking:
+  max_disappeared: 5  # Max frames to keep track without detection
+  max_distance: 50  # Max pixel distance for association
+  min_track_length: 3  # Minimum detections before considering valid
+
+# Decision thresholds
+decision:
+  large_school_area: 5000  # pixels^2
+  tight_school_compactness: 0.75
+  deep_threshold_ft: 30
+  shallow_threshold_ft: 15
