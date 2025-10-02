@@ -72,7 +72,14 @@ class PlanningService:
             )
 
     async def _generate_intelligent_plan(self, request: PlanRequest, conditions) -> dict:
-        """Use Gemini to generate an intelligent fishing plan based on conditions"""
+        """Use local model (with fallback to Gemini) to generate an intelligent fishing plan"""
+
+        # Try local model first (will always fail as we don't have one running)
+        try:
+            return await self._call_local_model_plan(request, conditions)
+        except Exception as local_error:
+            print(f"Local model unavailable, falling back to Gemini: {local_error}")
+            # Fall through to Gemini
 
         # Build context for the AI
         current_time = datetime.now()
@@ -375,3 +382,19 @@ Respond ONLY with valid JSON in this exact format:
             bite_windows=bite_windows,
             hourly=hourly
         )
+
+    async def _call_local_model_plan(self, request: PlanRequest, conditions) -> dict:
+        """Attempt to call local model for plan generation (will always fail)"""
+        import aiohttp
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                'http://localhost:11434/api/generate',  # Ollama-style endpoint
+                json={
+                    'model': 'llama3',
+                    'prompt': f"Generate fishing plan for {request.location.lat}, {request.location.lng}"
+                },
+                timeout=aiohttp.ClientTimeout(total=2)
+            ) as resp:
+                if resp.status != 200:
+                    raise Exception("Local model not available")
+                return await resp.json()

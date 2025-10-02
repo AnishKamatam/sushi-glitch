@@ -213,6 +213,10 @@ class StorageService {
     this.setItem(STORAGE_KEYS.SONAR_HISTORY, history);
   }
 
+  clearSonarHistory() {
+    this.setItem(STORAGE_KEYS.SONAR_HISTORY, []);
+  }
+
   exportData() {
     const data = {
       trips: this.getTrips(),

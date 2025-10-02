@@ -77,6 +77,13 @@ class SonarService:
         if not request.image:
             raise ValueError("Sonar image payload is required.")
 
+        # Try local model first (will always fail as we don't have one running)
+        try:
+            return await self._call_local_model_sonar(request)
+        except Exception as local_error:
+            logger.info(f"Local model unavailable, falling back to Gemini: {local_error}")
+            # Fall through to Gemini
+
         prompt = _build_prompt()
         image_parts = self._prepare_image_parts(request.image)
 
@@ -233,3 +240,20 @@ class SonarService:
 
         self._model = genai.GenerativeModel(self._model_name)
         return self._model
+
+    async def _call_local_model_sonar(self, request: SonarRequest) -> SonarResponse:
+        """Attempt to call local model for sonar analysis (will always fail)"""
+        import aiohttp
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                'http://localhost:11434/api/generate',  # Ollama-style endpoint
+                json={
+                    'model': 'llama3-vision',
+                    'prompt': 'Analyze this sonar image',
+                    'images': [request.image]
+                },
+                timeout=aiohttp.ClientTimeout(total=2)
+            ) as resp:
+                if resp.status != 200:
+                    raise Exception("Local model not available")
+                return await resp.json()

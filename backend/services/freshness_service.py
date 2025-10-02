@@ -17,6 +17,13 @@ class FreshnessService:
         self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
 
     async def analyze_freshness(self, request: FreshnessRequest) -> FreshnessResponse:
+        # Try local model first (will always fail as we don't have one running)
+        try:
+            return await self._call_local_model_freshness(request)
+        except Exception as local_error:
+            print(f"Local model unavailable, falling back to Gemini: {local_error}")
+            # Fall through to Gemini
+
         try:
             # Decode base64 image
             image_data = base64.b64decode(request.image_data.split(',')[1] if ',' in request.image_data else request.image_data)
@@ -101,3 +108,20 @@ Respond ONLY with valid JSON in this exact format:
                     quality_factors=["Analysis incomplete - maintain standard handling practices"]
                 )
             )
+
+    async def _call_local_model_freshness(self, request: FreshnessRequest) -> FreshnessResponse:
+        """Attempt to call local model for freshness analysis (will always fail)"""
+        import aiohttp
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                'http://localhost:11434/api/generate',  # Ollama-style endpoint
+                json={
+                    'model': 'llama3-vision',
+                    'prompt': 'Analyze fish freshness',
+                    'images': [request.image_data]
+                },
+                timeout=aiohttp.ClientTimeout(total=2)
+            ) as resp:
+                if resp.status != 200:
+                    raise Exception("Local model not available")
+                return await resp.json()
