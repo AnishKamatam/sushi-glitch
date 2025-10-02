@@ -11,6 +11,7 @@ from services.sonar_service import SonarService
 from services.freshness_service import FreshnessService
 from services.trip_service import TripService
 from services.marine_service import MarineService
+from services.elevenlabs_service import ElevenLabsService
 from models.schemas import *
 
 # Import video analyzer
@@ -36,6 +37,7 @@ freshness_service = FreshnessService()
 trip_service = TripService()
 marine_service = MarineService()
 video_analyzer = VideoSonarAnalyzer()
+tts_service = ElevenLabsService()
 
 @app.get("/")
 async def root():
@@ -203,6 +205,46 @@ async def get_video(filename: str):
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Video not found")
     return FileResponse(file_path)
+
+@app.post("/api/tts/synthesize")
+async def synthesize_speech(request: dict):
+    """
+    Generate speech from text using ElevenLabs TTS with Adam voice.
+    Best professional, natural-sounding voice for fishing callouts.
+    """
+    try:
+        text = request.get("text", "")
+        if not text:
+            raise HTTPException(status_code=400, detail="Text is required")
+
+        # Using Bella voice - natural, warm female voice
+        # EXAVITQu4vr4xnSDxMaL = Bella (natural, expressive female voice)
+        voice_id = request.get("voice_id", "EXAVITQu4vr4xnSDxMaL")
+
+        audio_generator = tts_service.synthesize_speech(
+            text=text,
+            voice_id=voice_id,
+            output_format="mp3_44100_128"
+        )
+
+        # Collect audio chunks
+        audio_bytes = b""
+        for chunk in audio_generator:
+            if chunk:
+                audio_bytes += chunk
+
+        from fastapi.responses import Response
+        return Response(
+            content=audio_bytes,
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": "inline",
+                "Cache-Control": "public, max-age=3600"
+            }
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

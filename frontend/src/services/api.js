@@ -99,6 +99,22 @@ class ApiService {
     const result = await response.json();
     return result.url;
   }
+
+  async synthesizeSpeech(text, voiceId = 'pNInz6obpgDQGcFmaJgB') {
+    const response = await fetch(`${API_BASE_URL}/tts/synthesize`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ text, voice_id: voiceId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`TTS request failed: ${response.status}`);
+    }
+
+    return response.blob();
+  }
 }
 
 export const apiService = new ApiService();

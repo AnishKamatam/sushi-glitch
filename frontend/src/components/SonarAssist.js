@@ -1,6 +1,26 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import './SonarAssist.css';
 import { getApiService } from '../services/api';
+import {
+  MdRadar,
+  MdLocationOn,
+  MdAccessTime,
+  MdUpload,
+  MdSearch,
+  MdClose,
+  MdVolumeUp,
+  MdTrendingUp
+} from 'react-icons/md';
+import {
+  FaFish,
+  FaArrowDown,
+  FaBrain,
+  FaChartArea,
+  FaLayerGroup
+} from 'react-icons/fa';
+import { GiRadarSweep } from 'react-icons/gi';
+import WAVES from 'vanta/dist/vanta.waves.min';
+import * as THREE from 'three';
 
 const api = getApiService();
 
@@ -12,8 +32,67 @@ const SonarAssist = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [isVideo, setIsVideo] = useState(false);
   const [videoRef, setVideoRef] = useState(null);
+  const [liveCallouts, setLiveCallouts] = useState([]);
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [currentDepth, setCurrentDepth] = useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const fileInputRef = useRef(null);
   const canvasRef = useRef(null);
+  const vantaRef = useRef(null);
+  const vantaEffect = useRef(null);
+
+  // Update time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Initialize Vanta.js background
+  useEffect(() => {
+    if (!sonarImage && vantaRef.current && !vantaEffect.current) {
+      vantaEffect.current = WAVES({
+        el: vantaRef.current,
+        THREE: THREE,
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        scale: 1.00,
+        scaleMobile: 1.00,
+        color: 0x0a1929,
+        shininess: 30.00,
+        waveHeight: 15.00,
+        waveSpeed: 0.75,
+        zoom: 0.85
+      });
+    }
+    return () => {
+      if (vantaEffect.current) {
+        vantaEffect.current.destroy();
+        vantaEffect.current = null;
+      }
+    };
+  }, [sonarImage]);
+
+  // Get location
+  useEffect(() => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCurrentLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          console.log('Location access denied or unavailable');
+        }
+      );
+    }
+  }, []);
 
   const resetState = useCallback(() => {
     setReading(null);
@@ -73,12 +152,56 @@ const SonarAssist = () => {
       };
 
       setReading(normalizedReading);
+      setCurrentDepth(normalizedReading.depth || normalizedReading.bottomDepth);
 
-      if (normalizedReading.recommendation && 'speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(normalizedReading.recommendation);
-        utterance.rate = 0.9;
-        utterance.pitch = 1.0;
-        speechSynthesis.speak(utterance);
+      // Create live callouts
+      const callouts = [];
+      if (normalizedReading.detectedObjects?.fish_arches > 0) {
+        callouts.push({
+          id: Date.now() + 1,
+          text: `${normalizedReading.detectedObjects.fish_arches} fish detected`,
+          timestamp: new Date(),
+          type: 'fish'
+        });
+      }
+      if (normalizedReading.density && normalizedReading.density !== 'unknown') {
+        callouts.push({
+          id: Date.now() + 2,
+          text: `${normalizedReading.density.toUpperCase()} school density`,
+          timestamp: new Date(),
+          type: 'density'
+        });
+      }
+      if (normalizedReading.speciesGuess) {
+        callouts.push({
+          id: Date.now() + 3,
+          text: `Likely ${normalizedReading.speciesGuess}`,
+          timestamp: new Date(),
+          type: 'species'
+        });
+      }
+      setLiveCallouts(callouts);
+
+      // Use ElevenLabs TTS instead of browser speech synthesis
+      if (normalizedReading.recommendation) {
+        try {
+          const audioBlob = await api.synthesizeSpeech(normalizedReading.recommendation);
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          audio.play();
+
+          // Store for replay functionality
+          window.lastAudioUrl = audioUrl;
+        } catch (ttsError) {
+          console.error('TTS error:', ttsError);
+          // Fallback to browser TTS if ElevenLabs fails
+          if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(normalizedReading.recommendation);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            speechSynthesis.speak(utterance);
+          }
+        }
       }
     } catch (err) {
       console.error(err);
@@ -93,11 +216,9 @@ const SonarAssist = () => {
     setIsVideo(isVideoFile);
 
     if (isVideoFile) {
-      // Handle video file - just display it, don't analyze yet
       const videoUrl = URL.createObjectURL(file);
       setSonarImage(videoUrl);
     } else {
-      // Handle image file
       const reader = new FileReader();
       reader.onload = async (e) => {
         const dataUrl = e.target?.result;
@@ -114,7 +235,6 @@ const SonarAssist = () => {
   }, []);
 
   const clearAll = useCallback(() => {
-    // Stop any playing video
     if (videoRef) {
       videoRef.pause();
       if (videoRef.src) {
@@ -127,6 +247,7 @@ const SonarAssist = () => {
     setError(null);
     setIsVideo(false);
     setVideoRef(null);
+    setLiveCallouts([]);
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -143,18 +264,37 @@ const SonarAssist = () => {
     }
   };
 
-  const repeatAudio = () => {
-    if (reading?.recommendation && 'speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(reading.recommendation);
-      utterance.rate = 0.9;
-      utterance.pitch = 1.0;
-      speechSynthesis.speak(utterance);
+  const repeatAudio = async () => {
+    if (!reading?.recommendation) return;
+
+    // Try to replay stored audio first
+    if (window.lastAudioUrl) {
+      const audio = new Audio(window.lastAudioUrl);
+      audio.play();
+      return;
+    }
+
+    // Otherwise, request new audio from ElevenLabs
+    try {
+      const audioBlob = await api.synthesizeSpeech(reading.recommendation);
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audio.play();
+      window.lastAudioUrl = audioUrl;
+    } catch (error) {
+      console.error('Replay audio error:', error);
+      // Fallback to browser TTS
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(reading.recommendation);
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        speechSynthesis.speak(utterance);
+      }
     }
   };
 
   const captureVideoFrame = () => {
-    // Get the video element from the DOM
-    const videoElement = document.querySelector('video.sonar-preview-image');
+    const videoElement = document.querySelector('video.sonar-feed-image');
     if (!videoElement || !isVideo) return;
 
     const canvas = canvasRef.current || document.createElement('canvas');
@@ -169,15 +309,37 @@ const SonarAssist = () => {
 
   return (
     <div className="sonar-assist">
-      <div className="sonar-container">
-        {/* Left Panel - Upload */}
-        <div className="upload-panel">
-          <div className="panel-header">
-            <h2 className="panel-title">Upload Sonar</h2>
-            <p className="panel-subtitle">Analyze fishfinder screenshots with AI</p>
+      {/* Live Status Bar */}
+      <div className="live-status-bar">
+        <div className="status-indicator">
+          <div className="live-pulse"></div>
+          <GiRadarSweep className="status-icon-svg" />
+          <span className="live-text">LIVE SONAR FEED</span>
+        </div>
+        <div className="live-stats">
+          {currentLocation && (
+            <div className="stat-item">
+              <MdLocationOn className="stat-icon-svg" />
+              <span className="stat-value">{currentLocation.lat.toFixed(4)}, {currentLocation.lng.toFixed(4)}</span>
+            </div>
+          )}
+          {currentDepth && (
+            <div className="stat-item">
+              <FaArrowDown className="stat-icon-svg" />
+              <span className="stat-value">{currentDepth} ft</span>
+            </div>
+          )}
+          <div className="stat-item">
+            <MdAccessTime className="stat-icon-svg" />
+            <span className="stat-value">{currentTime.toLocaleTimeString()}</span>
           </div>
+        </div>
+      </div>
 
-          <div className="upload-zone">
+      <div className="sonar-container">
+        {/* Main Feed Display */}
+        <div className="feed-panel">
+          <div className="feed-display">
             {!sonarImage ? (
               <div
                 className={`drop-area ${isDragging ? 'drag-over' : ''}`}
@@ -186,9 +348,13 @@ const SonarAssist = () => {
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
               >
-                <div className="drop-icon">↑</div>
-                <div className="drop-text">Click or drag media here</div>
-                <div className="drop-hint">Supports images (JPG, PNG) and videos (MP4, MOV)</div>
+                <div ref={vantaRef} className="empty-feed">
+                  <div className="drop-overlay">
+                    <MdRadar className="drop-icon" />
+                    <div className="drop-text">Connect Sonar Feed</div>
+                    <div className="drop-hint">Upload sonar image/video to simulate live feed</div>
+                  </div>
+                </div>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -198,11 +364,11 @@ const SonarAssist = () => {
                 />
               </div>
             ) : (
-              <div className="image-preview-container">
+              <div className="sonar-feed-container">
                 {isVideo ? (
                   <video
                     src={sonarImage}
-                    className="sonar-preview-image"
+                    className="sonar-feed-image"
                     controls
                     autoPlay
                     loop
@@ -210,104 +376,126 @@ const SonarAssist = () => {
                     playsInline
                   />
                 ) : (
-                  <img src={sonarImage} alt="Sonar" className="sonar-preview-image" />
+                  <img src={sonarImage} alt="Sonar" className="sonar-feed-image" />
                 )}
+
+                {/* Live Callouts Overlay */}
+                {liveCallouts.length > 0 && (
+                  <div className="callouts-overlay">
+                    {liveCallouts.map((callout) => (
+                      <div key={callout.id} className={`live-callout ${callout.type}`}>
+                        <div className="callout-pulse"></div>
+                        <span className="callout-text">{callout.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {isAnalyzing && (
                   <div className="analyzing-overlay">
                     <div className="spinner"></div>
-                    <div className="analyzing-text">Analyzing sonar data...</div>
+                    <div className="analyzing-text">AI ANALYZING...</div>
                   </div>
                 )}
               </div>
             )}
+          </div>
 
-            <div className="action-buttons">
-              {isVideo && sonarImage && (
-                <button
-                  className="btn btn-primary"
-                  onClick={captureVideoFrame}
-                  disabled={isAnalyzing}
-                >
-                  Analyze Frame
-                </button>
-              )}
+          {/* Feed Controls */}
+          <div className="feed-controls">
+            <button
+              className="control-btn upload-btn"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isAnalyzing}
+              title="Upload sonar data"
+            >
+              <MdUpload />
+              <span>{sonarImage ? 'Upload New Feed' : 'Upload Feed'}</span>
+            </button>
+            {isVideo && sonarImage && (
               <button
-                className="btn btn-primary"
-                onClick={() => fileInputRef.current?.click()}
+                className="control-btn analyze-btn"
+                onClick={captureVideoFrame}
                 disabled={isAnalyzing}
+                title="Analyze current frame"
               >
-                {sonarImage ? 'Upload New' : 'Select Media'}
+                <MdSearch />
+                <span>Analyze Frame</span>
               </button>
-              {sonarImage && (
-                <button
-                  className="btn btn-secondary"
-                  onClick={clearAll}
-                  disabled={isAnalyzing}
-                >
-                  Clear
-                </button>
-              )}
-            </div>
+            )}
+            {sonarImage && (
+              <button
+                className="control-btn clear-btn"
+                onClick={clearAll}
+                disabled={isAnalyzing}
+                title="Disconnect feed"
+              >
+                <MdClose />
+                <span>Disconnect</span>
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Right Panel - Results */}
-        <div className="results-panel">
+        {/* Right Panel - Live Analysis */}
+        <div className="analysis-panel">
+          <div className="panel-header">
+            <h3 className="panel-title">
+              <FaBrain className="panel-icon" />
+              AI ASSISTANT
+            </h3>
+            {typeof reading?.confidence === 'number' && (
+              <div className="confidence-badge">
+                {Math.round(reading.confidence * 100)}% AI
+              </div>
+            )}
+          </div>
+
           {error && (
             <div className="error-banner">
-              ⚠ {error}
+              <MdClose className="error-icon" />
+              {error}
             </div>
           )}
 
           {!reading && !error && (
             <div className="empty-state">
-              <div className="empty-state-icon">⌁</div>
-              <div className="empty-state-text">Upload a sonar image to begin analysis</div>
+              <GiRadarSweep className="empty-state-icon" />
+              <div className="empty-state-text">Waiting for sonar data...</div>
+              <div className="empty-state-hint">AI will provide real-time callouts when feed is active</div>
             </div>
           )}
 
           {reading && (
             <>
-              <div className="results-header">
-                <h3 className="results-title">Analysis Results</h3>
-                {typeof reading.confidence === 'number' && (
-                  <div className="confidence-badge">
-                    {Math.round(reading.confidence * 100)}% Confidence
-                  </div>
-                )}
-              </div>
-
-              {/* Metrics Grid */}
-              <div className="metrics-grid">
-                <div className="metric-card">
-                  <div className="metric-label">Fish Detected</div>
-                  <div className="metric-value">
-                    {reading.detectedObjects?.fish_arches || 0}
+              {/* Quick Metrics */}
+              <div className="quick-metrics">
+                <div className="quick-metric">
+                  <FaFish className="metric-icon" />
+                  <div className="metric-info">
+                    <span className="metric-number">{reading.detectedObjects?.fish_arches || 0}</span>
+                    <span className="metric-text">Fish</span>
                   </div>
                 </div>
 
-                <div className="metric-card">
-                  <div className="metric-label">Fish Depth</div>
-                  <div className="metric-value">
-                    {reading.depth || 0}
-                    <span className="metric-unit">ft</span>
+                <div className="quick-metric">
+                  <FaArrowDown className="metric-icon" />
+                  <div className="metric-info">
+                    <span className="metric-number">{reading.depth || reading.bottomDepth || 0}</span>
+                    <span className="metric-text">Depth (ft)</span>
                   </div>
                 </div>
 
-                <div className="metric-card">
-                  <div className="metric-label">School Density</div>
-                  <div
-                    className="density-badge"
-                    style={{ backgroundColor: getDensityColor(reading.density) }}
+                <div className="quick-metric">
+                  <span
+                    className="metric-icon density-indicator"
+                    style={{ color: getDensityColor(reading.density) }}
                   >
-                    {reading.density?.toUpperCase() || 'UNKNOWN'}
-                  </div>
-                </div>
-
-                <div className="metric-card">
-                  <div className="metric-label">School Width</div>
-                  <div className="metric-value" style={{ fontSize: '1.3rem' }}>
-                    {reading.schoolWidth || 'Unknown'}
+                    <MdTrendingUp />
+                  </span>
+                  <div className="metric-info">
+                    <span className="metric-number">{reading.density?.toUpperCase() || 'N/A'}</span>
+                    <span className="metric-text">Density</span>
                   </div>
                 </div>
               </div>
@@ -316,7 +504,7 @@ const SonarAssist = () => {
               {(reading.speciesGuess || reading.fishSize || reading.fishBehavior || reading.baitfishPresent !== undefined) && (
                 <div className="analysis-section">
                   <h4 className="section-header">
-                    <span className="section-icon">◈</span>
+                    <FaFish className="section-icon" />
                     Fish Intelligence
                   </h4>
                   <div className="info-list">
@@ -352,7 +540,7 @@ const SonarAssist = () => {
               {(reading.bottomType || reading.bottomDepth || reading.detectedObjects?.thermocline || reading.detectedObjects?.bottom_structure !== undefined) && (
                 <div className="analysis-section">
                   <h4 className="section-header">
-                    <span className="section-icon">◊</span>
+                    <FaLayerGroup className="section-icon" />
                     Structure & Environment
                   </h4>
                   <div className="info-list">
@@ -384,19 +572,25 @@ const SonarAssist = () => {
                 </div>
               )}
 
-              {/* Recommendation Section */}
-              <div className="recommendation-section">
-                <h4 className="recommendation-header">Recommendation</h4>
-                <p className="recommendation-text">
-                  {reading.recommendation.split('\n').map((line, index) => (
-                    <span key={index}>
-                      {line}
-                      {index < reading.recommendation.split('\n').length - 1 && <br />}
-                    </span>
-                  ))}
-                </p>
-                <button className="audio-button" onClick={repeatAudio}>
-                  Repeat Audio
+              {/* AI Recommendation Section */}
+              <div className="ai-recommendation">
+                <h4 className="ai-header">
+                  <FaChartArea className="ai-icon" />
+                  AI Analysis
+                </h4>
+                <div className="recommendation-content">
+                  <p className="recommendation-text">
+                    {reading.recommendation.split('\n').map((line, index) => (
+                      <span key={index}>
+                        {line}
+                        {index < reading.recommendation.split('\n').length - 1 && <br />}
+                      </span>
+                    ))}
+                  </p>
+                </div>
+                <button className="audio-replay-btn" onClick={repeatAudio}>
+                  <MdVolumeUp />
+                  <span>Replay Audio Callout</span>
                 </button>
               </div>
             </>
