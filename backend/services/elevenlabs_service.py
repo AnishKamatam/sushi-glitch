@@ -7,14 +7,12 @@ import logging
 import os
 from typing import Any, Dict, List, Optional
 
-from elevenlabs import ElevenLabs
+from dotenv import load_dotenv
+from elevenlabs.client import ElevenLabs
+from elevenlabs.play import play
 
 
 logger = logging.getLogger(__name__)
-
-DEFAULT_PLACEHOLDER_API_KEY = "ELEVENLABS_API_KEY_PLACEHOLDER"
-DEFAULT_MODEL_ID = "eleven_multilingual_v2"
-
 
 class ElevenLabsService:
     """Lightweight ElevenLabs Text-to-Speech client wrapper."""
@@ -24,80 +22,37 @@ class ElevenLabsService:
         api_key: Optional[str] = None,
         model_id: Optional[str] = None,
     ) -> None:
+        # Hackathon defaults - hardcoded for quick testing
         self._api_key = (
             api_key
             or os.getenv("ELEVENLABS_API_KEY")
-            or DEFAULT_PLACEHOLDER_API_KEY
+            or "your_elevenlabs_api_key_here"  # Replace with actual key
         )
 
-        if self._api_key == DEFAULT_PLACEHOLDER_API_KEY:
+        if self._api_key == "your_elevenlabs_api_key_here":
             logger.warning(
-                "Using placeholder ElevenLabs API key. Replace with a real key via the environment."
+                "Using placeholder ElevenLabs API key. Replace with a real key."
             )
 
-        self._model_id = model_id or os.getenv("ELEVENLABS_MODEL", DEFAULT_MODEL_ID)
+        self._model_id = model_id or os.getenv("ELEVENLABS_MODEL", "eleven_multilingual_v2")
         self._client = ElevenLabs(api_key=self._api_key)
 
-    async def synthesize_speech(
+    def synthesize_speech(
         self,
         text: str,
         voice_id: str,
         *,
         model_id: Optional[str] = None,
-        optimize_streaming_latency: Optional[int] = None,
-        output_format: Optional[str] = None,
-    ) -> bytes:
-        """Return audio bytes for the given text and voice id."""
-
-        return await asyncio.to_thread(
-            self._synthesize_speech,
-            text,
-            voice_id,
-            model_id,
-            optimize_streaming_latency,
-            output_format,
+        output_format: Optional[str] = "mp3_44100_128",
+    ):
+        """Return audio for the given text and voice id."""
+        
+        return self._client.text_to_speech.convert(
+            text=text,
+            voice_id=voice_id,
+            model_id=model_id or self._model_id,
+            output_format=output_format,
         )
-
-    def _synthesize_speech(
-        self,
-        text: str,
-        voice_id: str,
-        model_id: Optional[str],
-        optimize_streaming_latency: Optional[int],
-        output_format: Optional[str],
-    ) -> bytes:
-        params: Dict[str, Any] = {
-            "voice_id": voice_id,
-            "model_id": model_id or self._model_id,
-            "text": text,
-        }
-
-        if optimize_streaming_latency is not None:
-            params["optimize_streaming_latency"] = optimize_streaming_latency
-
-        if output_format is not None:
-            params["output_format"] = output_format
-
-        response = self._client.text_to_speech.convert(**params)
-
-        if isinstance(response, bytes):
-            audio_bytes = response
-        else:
-            audio_chunks: List[bytes] = []
-            for chunk in response:
-                if isinstance(chunk, bytes):
-                    audio_chunks.append(chunk)
-                elif hasattr(chunk, "audio"):
-                    audio_chunks.append(chunk.audio)
-                else:
-                    logger.debug("Ignoring unexpected ElevenLabs chunk type: %r", chunk)
-
-            audio_bytes = b"".join(audio_chunks)
-
-        if not audio_bytes:
-            raise RuntimeError("Received empty audio payload from ElevenLabs")
-
-        return audio_bytes
 
     async def list_voices(self) -> List[Dict[str, Any]]:
         """Return metadata for voices available to the account."""
@@ -120,3 +75,18 @@ class ElevenLabsService:
 
         return voice_entries
 
+def test_elevenlabs_service():
+    """Test function to verify ElevenLabs service functionality."""
+    load_dotenv()
+    print("starting test...")
+    service = ElevenLabsService()
+    print("initialized service...")
+    audio = service.synthesize_speech(
+        text="The first move is what sets everything in motion.",
+        voice_id="pqHfZKP75CvOlQylNhV4",
+    )
+    play(audio)
+
+
+if __name__ == "__main__":
+    test_elevenlabs_service()
