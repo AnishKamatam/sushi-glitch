@@ -1,7 +1,9 @@
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 import os
+import asyncio
+from pathlib import Path
 from dotenv import load_dotenv
 
 from services.planning_service import PlanningService
@@ -10,6 +12,11 @@ from services.freshness_service import FreshnessService
 from services.trip_service import TripService
 from services.marine_service import MarineService
 from models.schemas import *
+
+# Import video analyzer
+import sys
+sys.path.append(str(Path(__file__).parent / "sonar_assist"))
+from sonar_assist.video_analyzer import VideoSonarAnalyzer
 
 load_dotenv()
 
@@ -28,6 +35,7 @@ sonar_service = SonarService()
 freshness_service = FreshnessService()
 trip_service = TripService()
 marine_service = MarineService()
+video_analyzer = VideoSonarAnalyzer()
 
 @app.get("/")
 async def root():
@@ -121,6 +129,80 @@ async def upload_image(image: UploadFile = File(...)):
         return {"url": f"/uploads/{image.filename}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/sonar/analyze-video")
+async def analyze_sonar_video(video: UploadFile = File(...)):
+    """
+    Upload and analyze a sonar video.
+    Returns frame-by-frame detections and an annotated video.
+    """
+    try:
+        # Validate file type
+        if not video.content_type.startswith('video/'):
+            raise HTTPException(status_code=400, detail="File must be a video")
+
+        # Create upload directory
+        upload_dir = "uploads/videos"
+        os.makedirs(upload_dir, exist_ok=True)
+
+        # Save uploaded video
+        input_path = os.path.join(upload_dir, video.filename)
+        content = await video.read()
+
+        with open(input_path, "wb") as f:
+            f.write(content)
+
+        # Generate output filename
+        output_filename = f"analyzed_{Path(video.filename).stem}.mp4"
+        output_path = os.path.join(upload_dir, output_filename)
+
+        # Analyze video
+        detections = await video_analyzer.analyze_video(
+            video_path=input_path,
+            output_path=output_path,
+            enable_tts=False,
+            enable_groq=True
+        )
+
+        # Calculate summary statistics
+        frames_with_fish = sum(1 for d in detections if d['detections'])
+        total_detections = sum(len(d['detections']) for d in detections)
+
+        # Extract key moments (frames with large schools)
+        key_moments = []
+        for d in detections:
+            if d['recommendation'] and any(keyword in d['recommendation'].lower()
+                                          for keyword in ['large', 'tight', 'dense']):
+                key_moments.append({
+                    'frame': d['frame'],
+                    'timestamp': d['timestamp'],
+                    'recommendation': d['recommendation']
+                })
+
+        return {
+            "success": True,
+            "video_url": f"/uploads/videos/{video.filename}",
+            "analyzed_video_url": f"/uploads/videos/{output_filename}",
+            "summary": {
+                "total_frames": len(detections),
+                "frames_with_fish": frames_with_fish,
+                "total_detections": total_detections,
+                "avg_detections_per_frame": round(total_detections / len(detections), 2) if detections else 0
+            },
+            "key_moments": key_moments[:10],  # Top 10 key moments
+            "all_detections": detections
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/uploads/videos/{filename}")
+async def get_video(filename: str):
+    """Serve uploaded or analyzed videos."""
+    file_path = f"uploads/videos/{filename}"
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Video not found")
+    return FileResponse(file_path)
 
 if __name__ == "__main__":
     import uvicorn
