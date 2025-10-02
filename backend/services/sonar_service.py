@@ -30,7 +30,7 @@ def _build_prompt() -> str:
         "and other commercial gear. Focus on commercial viability, school size for netting, and efficient targeting.\n\n"
         "Provide a comprehensive analysis including:\n\n"
         "1. FISH DETECTION:\n"
-        "   - Count all visible fish arches/marks\n"
+        "   - Count all visible fish arches/marks. Note that it may just be a colored dot for a fish or a huge blob for a school of fish. If so, do your best to estimate, do not return 0.\n"
         "   - Identify fish size indicators (large arches = bigger fish, small marks = baitfish)\n"
         "   - Note suspended fish vs bottom-hugging fish\n"
         "   - Assess if school is large enough for commercial netting operations\n\n"

@@ -231,13 +231,6 @@ const SonarAssist = () => {
                   Analyze Frame
                 </button>
               )}
-              <button
-                className="btn btn-primary"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isAnalyzing}
-              >
-                {sonarImage ? 'Upload New' : 'Select Media'}
-              </button>
               {sonarImage && (
                 <button
                   className="btn btn-secondary"
