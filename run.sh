@@ -3,44 +3,18 @@
 # LEVIATHAN Fishing Copilot - Startup Script
 # This script starts both the backend (FastAPI) and frontend (React) servers
 
-echo "🐟 Starting LEVIATHAN Fishing Copilot..."
+echo "Starting LEVIATHAN Fishing Copilot..."
 echo "========================================"
-
-git fetch origin
-
-# Check if there are updates
-LOCAL=$(git rev-parse @)
-REMOTE=$(git rev-parse @{u} 2>/dev/null)
-
-if [ "$LOCAL" != "$REMOTE" ]; then
-    echo "⚠️  Updates available! Pulling latest changes..."
-    git pull origin main || git pull origin master
-    echo "✅ Repository updated"
-
-    # Install any new backend dependencies
-    echo "📦 Checking backend dependencies..."
-    pip install -r backend/requirements.txt --quiet
-
-    # Install any new frontend dependencies
-    echo "📦 Checking frontend dependencies..."
-    cd frontend
-    npm install --silent
-    cd ..
-else
-    echo "✅ Repository is up to date"
-fi
-
-echo ""
 
 # Check if .env exists in backend
 if [ ! -f ".env" ]; then
-    echo "⚠️  Warning: backend/.env not found!"
-    echo "Please create backend/.env with your GEMINI_API_KEY"
+    echo "[!] Warning: backend/.env not found!"
+    echo "    Please create backend/.env with your GEMINI_API_KEY"
     echo ""
 fi
 
 # Initialize and activate conda environment
-echo "🔧 Activating conda environment 'sushi'..."
+echo "[*] Activating conda environment 'sushi'..."
 
 # Try different conda initialization methods
 if [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
@@ -52,20 +26,26 @@ elif [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
 elif [ -f "/opt/anaconda3/etc/profile.d/conda.sh" ]; then
     source "/opt/anaconda3/etc/profile.d/conda.sh"
 else
-    echo "⚠️  Could not find conda.sh. Please run 'conda init bash' first."
+    echo "[!] Could not find conda.sh. Please run 'conda init bash' first."
     exit 1
 fi
 
 conda activate sushi
 
 if [ $? -ne 0 ]; then
-    echo "❌ Failed to activate conda environment 'sushi'"
-    echo "Please ensure the 'sushi' environment exists"
+    echo "[X] Failed to activate conda environment 'sushi'"
+    echo "    Please ensure the 'sushi' environment exists"
     exit 1
 fi
 
+# Kill any existing processes on ports 8000 and 3000
+echo "[*] Checking for existing processes on ports 8000 and 3000..."
+lsof -ti:8000 | xargs kill -9 2>/dev/null || true
+lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+sleep 1
+
 # Start backend server
-echo "📡 Starting backend server (FastAPI)..."
+echo "[*] Starting backend server (FastAPI)..."
 cd backend
 python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000 &
 BACKEND_PID=$!
@@ -75,14 +55,14 @@ cd ..
 sleep 2
 
 # Start frontend server
-echo "🎨 Starting frontend server (React)..."
+echo "[*] Starting frontend server (React)..."
 cd frontend
 npm start &
 FRONTEND_PID=$!
 cd ..
 
 echo ""
-echo "✅ LEVIATHAN is running!"
+echo "[+] LEVIATHAN is running!"
 echo "========================================"
 echo "Backend API:  http://localhost:8000"
 echo "Frontend App: http://localhost:3000"
@@ -94,10 +74,10 @@ echo ""
 # Function to cleanup on exit
 cleanup() {
     echo ""
-    echo "🛑 Stopping LEVIATHAN..."
+    echo "[*] Stopping LEVIATHAN..."
     kill $BACKEND_PID 2>/dev/null
     kill $FRONTEND_PID 2>/dev/null
-    echo "✅ All servers stopped"
+    echo "[+] All servers stopped"
     exit 0
 }
 
