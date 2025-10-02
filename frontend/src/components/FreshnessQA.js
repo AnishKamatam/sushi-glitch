@@ -189,6 +189,8 @@ const FreshnessQA = () => {
   };
 
   const startCamera = async () => {
+    setCameraActive(true);
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' }
@@ -196,11 +198,11 @@ const FreshnessQA = () => {
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        setCameraActive(true);
-        setViewMode('camera');
       }
     } catch (error) {
+      console.error('Camera error:', error);
       alert('Camera access denied or not available');
+      setCameraActive(false);
     }
   };
 
@@ -232,6 +234,9 @@ const FreshnessQA = () => {
     if (stream) {
       const tracks = stream.getTracks();
       tracks.forEach(track => track.stop());
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
     }
     setCameraActive(false);
   };
@@ -587,12 +592,16 @@ const FreshnessQA = () => {
       {viewMode === 'capture' && (
         <section className="capture-section">
           <div className="capture-buttons">
-            <button className="btn btn-primary" onClick={startCamera} disabled={cameraActive}>
-              Start Camera
+            <button
+              className="btn btn-primary"
+              onClick={cameraActive ? stopCamera : startCamera}
+            >
+              {cameraActive ? 'Stop Camera' : 'Start Camera'}
             </button>
             <button
               className="btn btn-secondary"
               onClick={() => fileInputRef.current?.click()}
+              disabled={cameraActive}
             >
               Upload Photo
             </button>
@@ -608,13 +617,17 @@ const FreshnessQA = () => {
 
           {cameraActive && (
             <div className="camera-section">
-              <video ref={videoRef} autoPlay playsInline className="camera-feed" />
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="camera-feed"
+                style={{ width: '100%', border: '2px solid #333', borderRadius: '8px' }}
+              />
               <div className="camera-controls">
                 <button className="btn btn-primary" onClick={capturePhoto}>
-                  Capture
-                </button>
-                <button className="btn btn-secondary" onClick={stopCamera}>
-                  Cancel
+                  Capture Photo
                 </button>
               </div>
             </div>
