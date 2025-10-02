@@ -1,6 +1,7 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './SonarAssist.css';
 import { getApiService } from '../services/api';
+import { storageService } from '../services/storage';
 
 const api = getApiService();
 
@@ -12,8 +13,14 @@ const SonarAssist = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [isVideo, setIsVideo] = useState(false);
   const [videoRef, setVideoRef] = useState(null);
+  const [history, setHistory] = useState([]);
   const fileInputRef = useRef(null);
   const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const fetched = storageService.getSonarHistory();
+    setHistory(fetched);
+  }, []);
 
   const resetState = useCallback(() => {
     setReading(null);
@@ -73,6 +80,16 @@ const SonarAssist = () => {
       };
 
       setReading(normalizedReading);
+
+      // Save to history
+      const historyEntry = {
+        id: `sonar_${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        image: imageDataUrl,
+        ...normalizedReading
+      };
+      storageService.saveSonarReading(historyEntry);
+      setHistory(prev => [historyEntry, ...prev]);
 
       if (normalizedReading.recommendation && 'speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(normalizedReading.recommendation);
@@ -396,6 +413,54 @@ const SonarAssist = () => {
           )}
         </div>
       </div>
+
+      {/* Analysis History */}
+      {history.length > 0 && (
+        <div className="history-section">
+          <div className="history-header">
+            <h3>Analysis Log</h3>
+            <button
+              className="btn btn-secondary"
+              onClick={() => {
+                storageService.clearSonarHistory();
+                setHistory([]);
+              }}
+            >
+              Clear Log
+            </button>
+          </div>
+          <div className="history-grid">
+            {history.slice(0, 10).map((entry) => (
+              <div key={entry.id} className="history-card">
+                <div className="history-image">
+                  {entry.image ? (
+                    <img src={entry.image} alt="Sonar analysis" />
+                  ) : (
+                    <div className="no-image">No image</div>
+                  )}
+                </div>
+                <div className="history-details">
+                  <div className="history-time">
+                    {new Date(entry.timestamp).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </div>
+                  <div className="history-stats">
+                    <span>Fish: {entry.detectedObjects?.fish_arches || 0}</span>
+                    <span>Depth: {entry.depth}ft</span>
+                    <span className="density-tag" style={{
+                      backgroundColor: getDensityColor(entry.density)
+                    }}>
+                      {entry.density}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

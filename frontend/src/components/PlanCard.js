@@ -306,10 +306,6 @@ const PlanCard = () => {
         </div>
       )}
 
-      <div className="plan-actions">
-        <button className="btn btn-primary">Start Trip Log</button>
-        <button className="btn btn-secondary">Update Conditions</button>
-      </div>
     </div>
   );
 };
