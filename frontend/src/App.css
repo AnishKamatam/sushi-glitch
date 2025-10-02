@@ -1,8 +1,15 @@
-body {
+html, body {
   margin: 0;
   padding: 0;
   background: #000000;
   overflow-x: hidden;
+  height: 100%;
+  min-height: 100vh;
+}
+
+#root {
+  background: #000000;
+  min-height: 100vh;
 }
 
 .App {

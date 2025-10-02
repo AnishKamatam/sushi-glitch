@@ -320,44 +320,41 @@ const PlanCard = () => {
     let startX = 0;
     let currentX = 0;
     let isDragging = false;
+    let startScrollLeft = 0;
 
     const handleTouchStart = (e) => {
       startX = e.touches[0].clientX;
+      startScrollLeft = hourlyStrip.scrollLeft;
       isDragging = true;
-      hourlyStrip.style.transition = 'none';
+      hourlyStrip.style.scrollBehavior = 'auto';
     };
 
     const handleTouchMove = (e) => {
       if (!isDragging) return;
+      e.preventDefault();
       currentX = e.touches[0].clientX;
-      const diffX = currentX - startX;
-      hourlyStrip.style.transform = `translateX(${diffX}px)`;
+      const diffX = startX - currentX;
+      hourlyStrip.scrollLeft = startScrollLeft + diffX;
     };
 
     const handleTouchEnd = () => {
       if (!isDragging) return;
       isDragging = false;
-      hourlyStrip.style.transition = 'transform 0.3s ease';
+      hourlyStrip.style.scrollBehavior = 'smooth';
       
-      const diffX = currentX - startX;
-      const threshold = 50;
+      const diffX = startX - currentX;
+      const threshold = 30;
       
       if (Math.abs(diffX) > threshold) {
-        if (diffX > 0) {
-          // Swipe right - scroll left
-          hourlyStrip.scrollBy({ left: -200, behavior: 'smooth' });
-        } else {
-          // Swipe left - scroll right
-          hourlyStrip.scrollBy({ left: 200, behavior: 'smooth' });
-        }
+        const itemWidth = 70; // Approximate width of each hourly item
+        const scrollAmount = Math.round(diffX / itemWidth) * itemWidth;
+        hourlyStrip.scrollBy({ left: scrollAmount, behavior: 'smooth' });
       }
-      
-      hourlyStrip.style.transform = 'translateX(0)';
     };
 
-    hourlyStrip.addEventListener('touchstart', handleTouchStart);
-    hourlyStrip.addEventListener('touchmove', handleTouchMove);
-    hourlyStrip.addEventListener('touchend', handleTouchEnd);
+    hourlyStrip.addEventListener('touchstart', handleTouchStart, { passive: false });
+    hourlyStrip.addEventListener('touchmove', handleTouchMove, { passive: false });
+    hourlyStrip.addEventListener('touchend', handleTouchEnd, { passive: false });
 
     return () => {
       hourlyStrip.removeEventListener('touchstart', handleTouchStart);
