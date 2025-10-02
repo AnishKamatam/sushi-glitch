@@ -69,7 +69,7 @@ def _build_prompt() -> str:
 
 
 class SonarService:
-    def __init__(self, model_name: str | None = None) -> None:
+    def __init__(self, model_name: Optional[str] = None) -> None:
         self._model_name = model_name or os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
         self._model: Optional[genai.GenerativeModel] = None
 
