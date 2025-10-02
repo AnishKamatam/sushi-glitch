@@ -11,6 +11,8 @@
   background-attachment: fixed;
   background-size: cover;
   background-repeat: no-repeat;
+  background-position: center center;
+  background-clip: padding-box;
 }
 
 /* Clear Night Sky */
@@ -1333,6 +1335,12 @@
 
   .plan-grid {
     margin-top: 1rem;
+  }
+
+  /* Ensure background extends on mobile scroll */
+  .weather-plan-card {
+    background-attachment: scroll;
+    min-height: 120vh;
   }
 }
 
