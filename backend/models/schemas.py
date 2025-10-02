@@ -18,6 +18,37 @@ class PlanRequest(BaseModel):
     target_species: Optional[List[str]] = None
     trip_duration: Optional[int] = None
 
+class BiteWindow(BaseModel):
+    label: str  # e.g., "Dawn Window", "Late Morning", "Plan B"
+    window: str  # e.g., "5:20 AM - 7:40 AM"
+    action: str  # e.g., "Drop metal jigs on reef peak"
+    tide: str  # e.g., "Slack flood"
+    confidence: str  # "High", "Medium", "Low", "Contingency"
+
+class HourlyForecast(BaseModel):
+    label: str  # e.g., "Now", "07:00"
+    time: str  # e.g., "5:30 AM"
+    wind: str  # e.g., "NW 8 kt"
+    gust: str  # e.g., "12 kt"
+    seas: str  # e.g., "2.4 ft @ 9s"
+    current: str  # e.g., "0.5 kt NW"
+    comment: str  # e.g., "Prime drop"
+    rating: str  # "good", "fair", "caution", "planb"
+    temperature: Optional[int] = None  # e.g., 60 (Fahrenheit)
+
+class FishermanForecast(BaseModel):
+    location_name: str  # e.g., "Coastal Shelf"
+    condition_summary: str  # e.g., "Calm dawn seas with light NW windline building after lunch."
+    sea_surface_temp: int  # e.g., 56
+    air_temp: int  # e.g., 58
+    solunar: str  # e.g., "Major 05:48 AM - 07:15 AM · Minor 11:32 AM - 12:10 PM"
+    swell_summary: str  # e.g., "2.5 ft WNW @ 9s"
+    tide_summary: str  # e.g., "Flooding to +5.7 ft by 09:40"
+    warnings: List[str]  # e.g., ["NW windline builds 18 kt after 14:00"]
+    marine_summary: Optional[str] = None  # AI-generated analysis of marine conditions
+    bite_windows: List[BiteWindow]
+    hourly: List[HourlyForecast]
+
 class PlanResponse(BaseModel):
     target_species: str
     depth_band: str
@@ -28,6 +59,7 @@ class PlanResponse(BaseModel):
     safety_notes: str
     plan_b: str
     confidence: float
+    forecast: Optional[FishermanForecast] = None
 
 class SonarMetadata(BaseModel):
     depth: Optional[float] = None
