@@ -24,7 +24,7 @@ app = FastAPI(title="LEVIATHAN API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://dans-day-here-arm.trycloudflare.com"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://dans-day-here-arm.trycloudflare.com", "https://sushi-glitch-git-main-eric-zhous-projects-8ac7a07b.vercel.app", "https://sushi-glitch.vercel.app", "https://skibidi-swart-two.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
