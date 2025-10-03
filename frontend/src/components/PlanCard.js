@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import MapLibreMap from './MapLibreMap';
+import { apiService } from '../services/api';
 import './PlanCard.css';
 
 const defaultPosition = { lat: 47.613, lng: -122.342 };
@@ -61,19 +62,11 @@ const PlanCard = () => {
   const fetchPlanForLocation = async (lat, lng) => {
     setIsLoadingPlan(true);
     try {
-      const response = await fetch('http://localhost:8000/api/plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          location: { lat, lng },
-          target_species: null,
-          trip_duration: 6
-        })
+      const data = await apiService.getPlan({
+        location: { lat, lng },
+        target_species: null,
+        trip_duration: 6
       });
-
-      if (!response.ok) throw new Error('Failed to fetch plan');
-
-      const data = await response.json();
       setPlanData(data);
 
       // Update forecast data
